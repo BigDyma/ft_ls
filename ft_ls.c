@@ -20,7 +20,8 @@
 
 flag_list flaguri;
 s_list	*head;
-
+//cr4 succes esti un pezdiuk molodet , te ridici incet dar sigur , iubeste-ti familia si nu sii distrabalat ,ai sa te casi in//
+//viitor in toaleta cu ataplenie nahui , dar acuma terpi// seo 
 int g_p;
 int g_check;
 
@@ -97,6 +98,7 @@ void	print_l()
 	while (temp != NULL)
 	{
 		printf("%s",temp->permis);
+		//bai da si is de koncenii eu , ebaa/////////
 		printf(" %d",(int)temp->nlink);
 		temp->timp = ctime(&temp->date) + 4;
 		temp->timp[12] = 0;
@@ -144,6 +146,7 @@ void insert(struct dirent *d, char *path, char *str)
     link->gr = gr;
     link->blocks = st.st_blocks;
     store = ft_strnew(1);
+    //asta alt comentariu de la sel mai pezdos copchil //
     store = ft_strjoin(store, permis(&st));
     store = ft_strjoin(store, (st.st_mode & S_IRUSR) ? "r" : "-");
     store = ft_strjoin(store, (st.st_mode & S_IWUSR) ? "w" : "-");
@@ -197,7 +200,7 @@ void	parse(char **ac, int len)
 	while (i < len)
 	{
 		//Daca ac[i] nu ii flag atunci el il cauta 
-		// ca fisier
+		// ca fisier bai esti un pidar :D 
 		if (!flag(ac[i]) || ii == 1 || (check == 0 && ii == 0))
 		{
 			if (minmin(ac[i]))
@@ -217,6 +220,7 @@ void	parse(char **ac, int len)
 int main(int av, char **ac)
 {
 	(void)av;
+	//eu asa hnele tot pot sa fac slehca si cu pl , ii mica prosta si usor scriu //
 	flaguri = *(flag_list*)malloc(sizeof(flag_list) + 1);
 	parse(ac, av);
 	return (0);
