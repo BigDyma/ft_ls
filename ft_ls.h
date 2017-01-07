@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+ /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   ft_ls.h                                            :+:      :+:    :+:   */
@@ -56,7 +56,7 @@ typedef struct      d_lst
     off_t   size;
     quad_t  blocks;
     dev_t   st_rdev;
-    char    *datee;
+    char    *timp;
     struct  passwd  *pw;
     struct  group   *gr;
     char    *permis;

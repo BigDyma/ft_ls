@@ -21,19 +21,26 @@
 flag_list flaguri;
 s_list	*head;
 
-int		check(char *str)
+int g_p;
+int g_check;
+
+int		flag(char *str)
 {
 	int i = 0;
-	size_t min = 1;
+	size_t min = 0;
 	while (str[i])
 	{
 		if (str[i] == '-')
-			min--;
+			min++;
 		i++;
 	}
-	return ((str[0] == '-' && str[1]) && !min);
+	return ((str[0] == '-' && str[1]) && min == 1);
 }
-
+int minmin(char *str)
+{
+	return(ft_strlen(str) == 1 && str[0] == '-' && 
+   		   str[1] == '-' && str[2] == '\0');
+}
 int in(char *str, char str2)
 {
 	int i = 0;
@@ -44,11 +51,6 @@ int in(char *str, char str2)
 		i++;
 	}
 	return (0);
-}
-
-int is_dot(char *str)
-{
-	return (str[0] == '.');
 }
 
 void searchflag(char *str)
@@ -69,31 +71,140 @@ void searchflag(char *str)
 			flaguri.d = (str[i] == 'd') ? 1 : flaguri.d;
 			flaguri.m = (str[i] == 'm') ? 1 : flaguri.m;
 			flaguri.g_upper = (str[i] == 'G') ? 1 : flaguri.g_upper;
-			flaguri.p = (str[i] == 'p') ? 1 : flaguri.p;			
-		
+			flaguri.p = (str[i] == 'p') ? 1 : flaguri.p;
+			g_check++;
 		}
 		else
-		{
 			printf("nu-i asa flag\n");
-		}
 		i++;
 	}
 }
 
+void print_name()
+{
+	s_list *temp;
+	temp = head;
+	while (temp != NULL)
+	{
+		printf("%s\t",temp->name);
+		temp=temp->next;
+	}
+}
+void	print_l()
+{
+	s_list *temp;
+	temp = head;
+	while (temp != NULL)
+	{
+		printf("%s",temp->permis);
+		printf(" %d",(int)temp->nlink);
+		temp->timp = ctime(&temp->date) + 4;
+		temp->timp[12] = 0;
+		printf(" %s %s %5d %s %s\n",temp->pw->pw_name,temp->gr->gr_name,(int)temp->size, temp->timp, temp->name);
+        temp = temp->next;
+	}
+}
+char    *permis(struct stat *elem)
+{
+    if(S_ISFIFO(elem->st_mode))
+        return("p") ;
+    if((S_ISCHR(elem->st_mode)))
+        return ("c");
+    if((S_ISDIR(elem->st_mode)))
+    return ("d");
+    if (S_ISBLK(elem->st_mode))
+        return ("b");
+    if (S_ISREG(elem->st_mode))
+        return ("-");
+    if (S_ISLNK(elem->st_mode))
+        return ("l");
+    if (S_ISSOCK(elem->st_mode))
+        return ("s");
+    return ("-");
+}
+void insert(struct dirent *d, char *path, char *str)
+{
+	s_list *link = (s_list*)malloc(sizeof(s_list) + 1);
+	struct stat st;
+	char *store;
+	link->name = d->d_name;
+    link->path = path;
+    link->parent = str;
+    link->next = head;
+    lstat(path,&st);
+    g_p +=(int)st.st_blocks;
+    link->size = st.st_size;
+    link->date = st.st_ctime;
+    link->nlink = st.st_nlink;
+    link->uid = st.st_uid;
+    struct passwd *pw = getpwuid(link->uid);
+    link->gid = st.st_gid;
+    struct group  *gr = getgrgid(link->gid);
+    link->pw = pw;
+    link->gr = gr;
+    link->blocks = st.st_blocks;
+    store = ft_strnew(1);
+    store = ft_strjoin(store, permis(&st));
+    store = ft_strjoin(store, (st.st_mode & S_IRUSR) ? "r" : "-");
+    store = ft_strjoin(store, (st.st_mode & S_IWUSR) ? "w" : "-");
+    store = ft_strjoin(store, (st.st_mode & S_IXUSR) ? "x" : "-");
+    store = ft_strjoin(store, (st.st_mode & S_IRGRP) ? "r" : "-");
+    store = ft_strjoin(store, (st.st_mode & S_IWGRP) ? "w" : "-");
+    store = ft_strjoin(store, (st.st_mode & S_IXGRP) ? "x" : "-");
+    store = ft_strjoin(store, (st.st_mode & S_IROTH) ? "r" : "-");
+    store = ft_strjoin(store, (st.st_mode & S_IWOTH) ? "w" : "-");
+    store = ft_strjoin(store, (st.st_mode & S_IXOTH) ? "x" : "-");
+    link->permis = store;
+    head = link;
+}
 int ls(char *str)
 {
 	struct dirent *d;
 	DIR *dir;
+	char *buf = (char *)malloc(sizeof(char) * sizeof(buf) + 1);
+	if (!str)
+		str = ".";
+	if (dir = opendir(str) == NULL)
+		return (0);
+	while (d = readdir(dir))
+	{
+		ft_strcpy (buf, str);
+        ft_strcat (buf, "/");
+        if (flaguri.a)
+        	insert(d, buf, str);
+        else if (d->d_name[0] != '.')
+        	insert(d, buf, str);
+	}
+	if (g_check == 0)
+		print_name();
+	// if (flaguri.r)
+	//		reverse(&head);
+	// if (flaguri.l)
+	// 	print_l();
+	//if (flaguri.R)
+	//		recurs();
+
+	//allfree();
+	//closedir(dir);
+	return (1);
 }
 
 void	parse(char **ac, int len)
 {
 	int i = 1;
 	int ii = 0;
+	int check = 0;
 	while (i < len)
 	{
-		if (!check(ac[i]) || ii == 1)
+		//Daca ac[i] nu ii flag atunci el il cauta 
+		// ca fisier
+		if (!flag(ac[i]) || ii == 1 || (check == 0 && ii == 0))
 		{
+			if (minmin(ac[i]))
+			{
+				check = 1;
+				i++;
+			}
 			ls(ac[i]);
 			ii = 1;
 		}
@@ -106,7 +217,7 @@ void	parse(char **ac, int len)
 int main(int av, char **ac)
 {
 	(void)av;
-	flaguri = *(flag_list*)malloc(sizeof(flag_list));
+	flaguri = *(flag_list*)malloc(sizeof(flag_list) + 1);
 	parse(ac, av);
 	return (0);
 }

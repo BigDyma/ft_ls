@@ -4,9 +4,7 @@ OBJ = $(SRC:.c=.o)
 CFLAGS = -Wall -Werror -Wextra
 
 all:
-	gcc $(CFLAGS) $(SRC) libft/libft.a
-	ar rc $(NAME) $? $(OBJ)
-	ranlib $(NAME)
+	gcc  $(SRC)  libft/libft.a -o ft_ls
 
 clean:
 	make -C libft/ clean
