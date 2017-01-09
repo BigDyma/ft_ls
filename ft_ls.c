@@ -104,6 +104,17 @@ void	print_l()
         temp = temp->next;
 	}
 }
+void sortbytime()
+{
+	
+}
+void sort(d_lst *node)
+{
+	if (flaguri.t)
+	{
+		sortbytime()
+	}
+}
 char    *permis(struct stat *elem)
 {
     if(S_ISFIFO(elem->st_mode))
@@ -162,8 +173,6 @@ int ls(char *str)
 	struct dirent *d;
 	DIR *dir;
 	char *buf = (char *)malloc(sizeof(char) * sizeof(buf) + 1);
-	if (!str)
-		str = ".";
 	if ((dir = opendir(str)) == NULL)
 		return (0);
 	while ((d = readdir(dir)))
@@ -176,7 +185,7 @@ int ls(char *str)
         else if (d->d_name[0] != '.')
         	insert(d, buf, str);
 	}
-
+	//sort(&head);
 	if (g_check == 0)
 		print_name();
 	// if (flaguri.r)
@@ -202,8 +211,11 @@ void	parse(char **ac, int len)
 		// ca fisier 
 		//printf("valoarea functiei flag(): %d\n", flag(ac[i]));
 		if (check == 1)
-			{ls(ac[i]);
-			 i++; continue ;}
+			{
+			ls(ac[i]);
+			i++; 
+			continue ;
+			}
 		if (!flag(ac[i])|| ii == 1 || (check == 0 && ii == 0))
 		{
 		//	printf("o intrat in functie flag()\n" );
@@ -212,7 +224,7 @@ void	parse(char **ac, int len)
 				check = 1;
 				i++;
 			}
-			ls(ac[i]);
+			ls(ac[i])
 			ii = 1;
 		}
 		if (ii == 0)
@@ -223,8 +235,11 @@ void	parse(char **ac, int len)
 
 int main(int av, char **ac)
 {
-	(void)av;
 	flaguri = *(flag_list*)malloc(sizeof(flag_list) + 1);
+	if (av == 1)
+	{
+		ls(".");
+	}
 	parse(ac, av);
 	//printf("flagul l:%d\n",flaguri.l);
 	return (0);
