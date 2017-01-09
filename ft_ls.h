@@ -60,7 +60,7 @@ typedef struct      d_lst
     struct  passwd  *pw;
     struct  group   *gr;
     char    *permis;
-    struct  s_elem  *next;
+    struct  d_lst  *next;
 }                        s_list;
 
 #endif

@@ -20,8 +20,6 @@
 
 flag_list flaguri;
 s_list	*head;
-//cr4 succes esti un pezdiuk molodet , te ridici incet dar sigur , iubeste-ti familia si nu sii distrabalat ,ai sa te casi in//
-//viitor in toaleta cu ataplenie nahui , dar acuma terpi// seo 
 int g_p;
 int g_check;
 
@@ -29,6 +27,7 @@ int		flag(char *str)
 {
 	int i = 0;
 	size_t min = 0;
+	//printf("functia flag, string:%s\n", str);
 	while (str[i])
 	{
 		if (str[i] == '-')
@@ -98,7 +97,6 @@ void	print_l()
 	while (temp != NULL)
 	{
 		printf("%s",temp->permis);
-		//bai da si is de koncenii eu , ebaa/////////
 		printf(" %d",(int)temp->nlink);
 		temp->timp = ctime(&temp->date) + 4;
 		temp->timp[12] = 0;
@@ -146,7 +144,6 @@ void insert(struct dirent *d, char *path, char *str)
     link->gr = gr;
     link->blocks = st.st_blocks;
     store = ft_strnew(1);
-    //asta alt comentariu de la sel mai pezdos copchil //
     store = ft_strjoin(store, permis(&st));
     store = ft_strjoin(store, (st.st_mode & S_IRUSR) ? "r" : "-");
     store = ft_strjoin(store, (st.st_mode & S_IWUSR) ? "w" : "-");
@@ -167,23 +164,25 @@ int ls(char *str)
 	char *buf = (char *)malloc(sizeof(char) * sizeof(buf) + 1);
 	if (!str)
 		str = ".";
-	if (dir = opendir(str) == NULL)
+	if ((dir = opendir(str)) == NULL)
 		return (0);
-	while (d = readdir(dir))
+	while ((d = readdir(dir)))
 	{
 		ft_strcpy (buf, str);
         ft_strcat (buf, "/");
+        ft_strcpy (buf, d->d_name);
         if (flaguri.a)
         	insert(d, buf, str);
         else if (d->d_name[0] != '.')
         	insert(d, buf, str);
 	}
+
 	if (g_check == 0)
 		print_name();
 	// if (flaguri.r)
 	//		reverse(&head);
-	// if (flaguri.l)
-	// 	print_l();
+	 if (flaguri.l)
+	 	print_l();
 	//if (flaguri.R)
 	//		recurs();
 
@@ -200,9 +199,14 @@ void	parse(char **ac, int len)
 	while (i < len)
 	{
 		//Daca ac[i] nu ii flag atunci el il cauta 
-		// ca fisier bai esti un pidar :D 
-		if (!flag(ac[i]) || ii == 1 || (check == 0 && ii == 0))
+		// ca fisier 
+		//printf("valoarea functiei flag(): %d\n", flag(ac[i]));
+		if (check == 1)
+			{ls(ac[i]);
+			 i++; continue ;}
+		if (!flag(ac[i])|| ii == 1 || (check == 0 && ii == 0))
 		{
+		//	printf("o intrat in functie flag()\n" );
 			if (minmin(ac[i]))
 			{
 				check = 1;
@@ -211,7 +215,7 @@ void	parse(char **ac, int len)
 			ls(ac[i]);
 			ii = 1;
 		}
-		if (!ii)
+		if (ii == 0)
 			searchflag(ac[i]);
 		i++;
 	}
@@ -220,8 +224,8 @@ void	parse(char **ac, int len)
 int main(int av, char **ac)
 {
 	(void)av;
-	//eu asa hnele tot pot sa fac slehca si cu pl , ii mica prosta si usor scriu //
 	flaguri = *(flag_list*)malloc(sizeof(flag_list) + 1);
 	parse(ac, av);
+	//printf("flagul l:%d\n",flaguri.l);
 	return (0);
 }
