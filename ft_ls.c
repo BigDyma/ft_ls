@@ -19,10 +19,92 @@
 #include "ft_ls.h"
 
 flag_list flaguri;
-s_list	*head;
+s_list	*head = NULL;
 int g_p;
-int g_check;
+int g_flagprove;
+s_list *SortedMerge(s_list *a, s_list *b);
+s_list *SortedMerget(s_list *a, s_list *b);
+void FrontBackSplit(s_list *source,
+          s_list **frontRef, s_list **backRef);
 
+void MergeSort(s_list **headRef)
+{
+  s_list *headd = *headRef;
+  s_list *a;
+  s_list *b;
+
+  if ((headd == NULL) || (headd->next == NULL))
+  {
+    return;
+  }
+
+  FrontBackSplit(headd, &a, &b); 
+
+  MergeSort(&a);
+  MergeSort(&b);
+    
+       // *headRef = SortedMerget(a,b);
+        *headRef = SortedMerge(a, b);
+  
+}
+
+s_list *SortedMerge(s_list *a, s_list *b)
+{
+  s_list *result = NULL;
+
+  if (a == NULL)
+     return(b);
+  else if (b==NULL)
+     return(a);
+  int c;
+  if (flaguri.t == 1)
+    c = difftime(b->date, a->date);
+    else
+  c = ft_strcmp(a->name,b->name);
+  if (c <= 0)
+  {
+     result = a;
+     result->next = SortedMerge(a->next, b);
+  }
+  else
+  {
+     result = b;
+     result->next = SortedMerge(a, b->next);
+  }
+  return(result);
+}
+
+
+void FrontBackSplit(s_list *source,
+          s_list **frontRef, s_list **backRef)
+{
+  s_list *fast;
+  s_list *slow;
+  if (source==NULL || source->next==NULL)
+  {
+    *frontRef = source;
+    *backRef = NULL;
+  }
+  else
+  {
+    slow = source;
+    fast = source->next;
+
+    while (fast != NULL)
+    {
+      fast = fast->next;
+      if (fast != NULL)
+      {
+        slow = slow->next;
+        fast = fast->next;
+      }
+    }
+
+    *frontRef = source;
+    *backRef = slow->next;
+    slow->next = NULL;
+  }
+}
 int		flag(char *str)
 {
 	int i = 0;
@@ -72,7 +154,7 @@ void searchflag(char *str)
 			flaguri.m = (str[i] == 'm') ? 1 : flaguri.m;
 			flaguri.g_upper = (str[i] == 'G') ? 1 : flaguri.g_upper;
 			flaguri.p = (str[i] == 'p') ? 1 : flaguri.p;
-			g_check++;
+			g_flagprove++;
 		}
 		else
 			printf("nu-i asa flag\n");
@@ -86,7 +168,7 @@ void print_name()
 	temp = head;
 	while (temp != NULL)
 	{
-		printf("%s\t",temp->name);
+		printf("%s\n",temp->name);
 		temp=temp->next;
 	}
 }
@@ -102,17 +184,6 @@ void	print_l()
 		temp->timp[12] = 0;
 		printf(" %s %s %5d %s %s\n",temp->pw->pw_name,temp->gr->gr_name,(int)temp->size, temp->timp, temp->name);
         temp = temp->next;
-	}
-}
-void sortbytime()
-{
-	
-}
-void sort(d_lst *node)
-{
-	if (flaguri.t)
-	{
-		sortbytime()
 	}
 }
 char    *permis(struct stat *elem)
@@ -168,6 +239,22 @@ void insert(struct dirent *d, char *path, char *str)
     link->permis = store;
     head = link;
 }
+
+static void reverse(s_list **head_ref)
+{
+    s_list *prev   = NULL;
+    s_list *current = *head_ref;
+    s_list *next;
+    while (current != NULL)
+    {
+        next  = current->next;  
+        current->next = prev;   
+        prev = current;
+        current = next;
+    }
+    *head_ref = prev;
+}
+
 int ls(char *str)
 {
 	struct dirent *d;
@@ -185,13 +272,15 @@ int ls(char *str)
         else if (d->d_name[0] != '.')
         	insert(d, buf, str);
 	}
-	//sort(&head);
-	if (g_check == 0)
+	MergeSort(&head);
+	if (g_flagprove == 0)
 		print_name();
-	// if (flaguri.r)
-	//		reverse(&head);
+	else if (flaguri.r)
+		reverse(&head);
 	 if (flaguri.l)
 	 	print_l();
+	 else
+	 	print_name();
 	//if (flaguri.R)
 	//		recurs();
 
@@ -203,43 +292,39 @@ int ls(char *str)
 void	parse(char **ac, int len)
 {
 	int i = 1;
-	int ii = 0;
-	int check = 0;
+	int filefound = 0;
+	int fmin = 0;
 	while (i < len)
 	{
 		//Daca ac[i] nu ii flag atunci el il cauta 
 		// ca fisier 
 		//printf("valoarea functiei flag(): %d\n", flag(ac[i]));
-		if (check == 1)
+		if (minmin(ac[i]) && fmin == 0 && filefound == 0)
 			{
-			ls(ac[i]);
-			i++; 
-			continue ;
+				fmin = 1;
+				filefound = 1;
+				i++; 
+				continue;
 			}
-		if (!flag(ac[i])|| ii == 1 || (check == 0 && ii == 0))
+		if (!flag(ac[i]) || filefound == 1)
 		{
-		//	printf("o intrat in functie flag()\n" );
-			if (minmin(ac[i]))
-			{
-				check = 1;
-				i++;
-			}
-			ls(ac[i])
-			ii = 1;
+			printf("o intrat in functie flag(), %s\n",ac[i]);
+			ls(ac[i]);
+			filefound = 1;
 		}
-		if (ii == 0)
+		if (filefound == 0)
 			searchflag(ac[i]);
 		i++;
+	}
+	if (filefound == 0)
+	{
+		ls(".");
 	}
 }
 
 int main(int av, char **ac)
 {
 	flaguri = *(flag_list*)malloc(sizeof(flag_list) + 1);
-	if (av == 1)
-	{
-		ls(".");
-	}
 	parse(ac, av);
 	//printf("flagul l:%d\n",flaguri.l);
 	return (0);
