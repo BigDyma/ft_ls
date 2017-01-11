@@ -6,7 +6,8 @@ CFLAGS = -Wall -Werror -Wextra
 all:
 	make -C libft/ re
 	gcc  $(SRC)  libft/libft.a -o ft_ls
-
+now:
+	gcc  $(SRC)  libft/libft.a -o ft_ls
 clean:
 	make -C libft/ clean
 
