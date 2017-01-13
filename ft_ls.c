@@ -17,7 +17,7 @@
 #include <string.h>
 #include <time.h>
 #include "ft_ls.h"
-
+#include <string.h>
 flag_list flaguri;
 s_list	*head = NULL;
 int g_p;
@@ -26,7 +26,8 @@ s_list *SortedMerge(s_list *a, s_list *b);
 s_list *SortedMerget(s_list *a, s_list *b);
 void FrontBackSplit(s_list *source,
 		s_list **frontRef, s_list **backRef);
-
+int ls(char *str);
+void error(char *str);
 void MergeSort(s_list **headRef)
 {
 	s_list *headd = *headRef;
@@ -105,25 +106,116 @@ void FrontBackSplit(s_list *source,
 		slow->next = NULL;
 	}
 }
-void recurs()
+#define GREEN   "\x1b[32m"
+#define BLUE    "\x1b[34m"
+#define WHITE   "\x1b[37m"
+void RecDir(const char *name, int level)
 {
-	DIR 	*dir;
-	s_list *temp = (s_list*)malloc(sizeof(s_list) * 10 + 1);
-	temp = head;
-	while (temp != NULL)
-	{
-		if (temp->permis[0] == 'd')
-		{
-			//intra in fisier
-			temp->parent = ft_strjoin(temp->parent,"/");
-            temp->name = ft_strjoin(temp->parent,temp->name);
-            if ((dir = opendir(temp->name)) != NULL)
-                printf(" %s :\n",temp->name);
-            printf("\n\n");
-		}
-		temp = temp->next;
-	}
+    DIR *dir;
+    struct dirent *entry;
+
+    if (!(dir = opendir(name)))
+        return;
+    if (!(entry = readdir(dir)))
+        return;
+
+    do {
+        if (entry->d_type == DT_DIR) {
+            char path[1024];
+            int len = snprintf(path, sizeof(path)-1, "%s/%s", name, entry->d_name);
+            path[len] = 0;
+            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+                continue;
+            printf("%*s[%s]\n", level*2, "", entry->d_name);
+            RecDir(path, level + 1);
+        }
+        else
+            printf("%*s- %s\n", level*2, "", entry->d_name);
+    } while (entry = readdir(dir));
+    closedir(dir);
 }
+
+// void Usage() {
+//     fprintf(stderr, "\nUsage: exec [OPTION]... [DIR]...\n");
+//     fprintf(stderr, "List DIR's (directory) contents\n");
+//     fprintf(stderr, "\nOptions\n-R\tlist subdirectories recursively\n");
+//     return;
+// }
+
+// void RecDir(char *path, int flag) {
+//     DIR *dp = opendir(path);
+//     if(!dp) {
+//         perror(path);
+//         return;
+//     }
+//     struct dirent *ep;
+//     char newdir[512];
+//     printf(BLUE "\n%s :\n" WHITE, path);
+//     while((ep = readdir(dp)))
+//         if(strncmp(ep->d_name, ".", 1))
+//             printf(GREEN "\t%s\n" WHITE, ep->d_name);
+//     closedir(dp);
+//     dp = opendir(path);
+//     while((ep = readdir(dp))) if(strncmp(ep->d_name, ".", 1)) {
+//         if(flag && ep->d_type == 4) {
+//             sprintf(newdir, "%s/%s", path, ep->d_name);
+//             RecDir(newdir, 1);
+//         }
+//     }
+//     closedir(dp);
+// }
+
+// void Usage() {
+//     fprintf(stderr, "\nUsage: exec [OPTION]... [DIR]...\n");
+//     fprintf(stderr, "List DIR's (directory) contents\n");
+//     fprintf(stderr, "\nOptions\n-R\tlist subdirectories recursively\n");
+//     return;
+// }
+
+// void recurs(char *path) {
+//     DIR *dp = opendir(path);
+//     if(!dp) {
+//         perror(path);
+//         return;
+//     }
+//    s_list *ep = (s_list*)malloc(sizeof(s_list) * 10 + 1);
+//    ep = head;
+//     char newdir[1028];
+//     printf(BLUE "\n%s :\n" WHITE, path);
+//     while((ep != NULL))
+//         if(ep->name[0] == '.')
+//             printf(GREEN "\t%s\n" WHITE, ep->name);
+//     closedir(dp);
+//     dp = opendir(path);
+//     while(ep != NULL) if(strncmp(ep->name, ".", 1)) {
+//         if(ep->permis[0] == 'd') {
+//             sprintf(newdir, "%s/%s", path, ep->name);
+//             recurs(newdir);
+//         }
+//     }
+//     closedir(dp);
+// }
+
+// void recurs()
+// {
+// 	DIR 	*dir;
+// 	s_list *temp = (s_list*)malloc(sizeof(s_list) * 10 + 1);
+// 	temp = head;
+// 	while (temp != NULL)
+// 	{
+// 		if (temp->permis[0] == 'd')
+// 		{
+// 			//intra in fisier
+// 			temp->parent = ft_strjoin(temp->parent,"/");
+//             temp->name = ft_strjoin(temp->parent,temp->name);
+//             if ((dir = opendir(temp->name)) != NULL)
+//                 printf(" %s :\n",temp->name);
+//             error(temp->name);
+//             printf("\n\n");
+// 		}
+// 		temp = temp->next;
+// 	}
+// }
 int		flag(char *str)
 {
 	int i = 0;
@@ -261,7 +353,7 @@ void insert(struct dirent *d, char *path, char *str)
 
 void    display_file(char *str)
 {
-    s_elem *link = (t_elem*) malloc(sizeof(t_elem));
+    s_list *link = (s_list*) malloc(sizeof(s_list));
     struct  stat my_stat;
     char    *store;
     lstat(str,&my_stat);
@@ -281,11 +373,11 @@ void    display_file(char *str)
     store = ft_strjoin(store, (my_stat.st_mode & S_IROTH) ? "r" : "-");
     store = ft_strjoin(store, (my_stat.st_mode & S_IWOTH) ? "w" : "-");
     store = ft_strjoin(store, (my_stat.st_mode & S_IXOTH) ? "x" : "-");
-    link->time = ctime(&my_stat.st_ctime) + 4;
-    link->datee[12] = 0;
-    if (flags.l)
+    link->timp = ctime(&my_stat.st_ctime) + 4;
+    link->timp[12] = 0;
+    if (flaguri.l)
     printf("%s %d %s %s %d %s %s\n",store,(int)my_stat.st_nlink,pw->pw_name,gr->gr_name,(int)my_stat.st_size,
-        link->datee,str);
+        link->timp,str);
     else printf("%s\n",str);
 }
 
@@ -293,7 +385,7 @@ void    error(char *str)
 {
     DIR *dir;
     struct  stat my_stat;
-
+   // printf("o intrat in error()\n");
     lstat(str,&my_stat);
     if ((dir = opendir(str)) == NULL)
     {   
@@ -344,7 +436,9 @@ int ls(char *str)
 	{
 		ft_strcpy (buf, str);
 		ft_strcat (buf, "/");
-		ft_strcpy (buf, d->d_name);
+		ft_strcat (buf, d->d_name);
+
+		//sprintf(buf,"%s/%s",str,d->d_name);
 		if (flaguri.a)
 			insert(d, buf, str);
 		else if (d->d_name[0] != '.')
@@ -372,7 +466,7 @@ int ls(char *str)
 	}
 	if (flaguri.r_upper == 1)
 	{
-			recurs();
+			RecDir(str, 1);
 	}
 
 	//allfree();
@@ -398,8 +492,8 @@ void	parse(char **ac, int len)
 		}
 		else if (!flag(ac[i]) || filefound == 1)
 		{
-			printf("o intrat in functie flag(), %s\n",ac[i]);
-				ls(ac[i]);
+			//printf("o intrat in functie flag(), %s\n",ac[i]);
+			error(ac[i]);
 			filefound = 1;
 		}
 		else if (filefound == 0)
