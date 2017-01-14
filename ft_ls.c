@@ -18,8 +18,10 @@
 #include <time.h>
 #include "ft_ls.h"
 #include <string.h>
+
 flag_list flaguri;
 s_list	*head = NULL;
+
 int g_p;
 int g_flagprove;
 s_list *SortedMerge(s_list *a, s_list *b);
@@ -33,18 +35,13 @@ void MergeSort(s_list **headRef)
 	s_list *headd = *headRef;
 	s_list *a;
 	s_list *b;
-
 	if ((headd == NULL) || (headd->next == NULL))
 	{
 		return;
 	}
-
 	FrontBackSplit(headd, &a, &b); 
-
 	MergeSort(&a);
 	MergeSort(&b);
-
-	// *headRef = SortedMerget(a,b);
 	*headRef = SortedMerge(a, b);
 
 }
@@ -100,40 +97,61 @@ void FrontBackSplit(s_list *source,
 				fast = fast->next;
 			}
 		}
-
 		*frontRef = source;
 		*backRef = slow->next;
 		slow->next = NULL;
 	}
 }
+
 #define GREEN   "\x1b[32m"
 #define BLUE    "\x1b[34m"
 #define WHITE   "\x1b[37m"
 void RecDir(const char *name, int level)
 {
     DIR *dir;
-    struct dirent *entry;
-
-    if (!(dir = opendir(name)))
-        return;
-    if (!(entry = readdir(dir)))
-        return;
-
-    do {
-        if (entry->d_type == DT_DIR) {
-            char path[1024];
-            int len = snprintf(path, sizeof(path)-1, "%s/%s", name, entry->d_name);
-            path[len] = 0;
-            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-                continue;
-            printf("%*s[%s]\n", level*2, "", entry->d_name);
-            RecDir(path, level + 1);
-        }
-        else
-            printf("%*s- %s\n", level*2, "", entry->d_name);
-    } while (entry = readdir(dir));
+    // s_list *entry = (s_list*)malloc(sizeof(s_list) * sizeof(entry) * 100 + 1);
+   s_list *entry = (s_list*)malloc(sizeof(s_list) * 100);
+   entry = head;
+   if (!(dir = opendir(name)))
+       return;
+   if (!entry)
+       	return;
+  
     closedir(dir);
 }
+
+// void RecDir(const char *name, int level)
+// {
+//     DIR *dir;
+//     // s_list *entry = (s_list*)malloc(sizeof(s_list) * sizeof(entry) * 100 + 1);
+//     struct dirent *entry;
+//     if (!(dir = opendir(name)))
+//         return;
+//     if (!(entry = readdir(dir)))
+//         return;
+
+//     do {
+//         if (entry->d_type == DT_DIR) {
+//         char buf[1024];
+//         ft_strcpy (buf, name);
+// 		ft_strcat (buf, "/");
+// 		ft_strcat (buf, entry->d_name);
+//             //int len = snprintf(path, sizeof(path)-1, "%s/%s", name, entry->d_name);
+//           //  path[len] = 0;
+//             if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+//             {
+//            //  	entry->d_parent = ft_strjoin(entry->d_parent,"/");
+// 		         // entry->d_name = ft_strjoin(entry->d_parent,entry->d_name)
+//                 	continue;
+//             }
+//             printf("%*s[%s]\n", level*2, "", entry->d_name);
+//             RecDir(buf, level + 1);
+//         }
+//         else
+//             printf("%*s- %s\n", level*2, "", entry->d_name);
+//     } while ((entry = readdir(dir)));
+//     closedir(dir);
+// }
 
 // void Usage() {
 //     fprintf(stderr, "\nUsage: exec [OPTION]... [DIR]...\n");
@@ -293,7 +311,7 @@ void	print_l()
 		printf(" %d",(int)temp->nlink);
 		temp->timp = ctime(&temp->date) + 4;
 		temp->timp[12] = 0;
-		printf(" %s %s %5d %s %s\n",temp->pw->pw_name,temp->gr->gr_name,(int)temp->size, temp->timp, temp->name);
+		printf(" %s  %s  %5d  %s  %s\n",temp->pw->pw_name,temp->gr->gr_name,(int)temp->size, temp->timp, temp->name);
 		temp = temp->next;
 	}
 }

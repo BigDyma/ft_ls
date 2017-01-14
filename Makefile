@@ -10,6 +10,7 @@ now:
 	gcc  $(SRC)  libft/libft.a -o ft_ls
 clean:
 	make -C libft/ clean
+	rm -rf $(OBJ:.o=.c)
 
 fclean:	clean
 		rm  $(NAME)
