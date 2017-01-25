@@ -6,7 +6,7 @@
 /*   By: dstrelet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/28 16:56:49 by dstrelet          #+#    #+#             */
-/*   Updated: 2016/12/28 16:56:50 by dstrelet         ###   ########.fr       */
+/*   Updated: 2017/01/23 13:57:34 by dstrelet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FT_LS_H
@@ -27,7 +27,36 @@
 # include <unistd.h>
 # include <errno.h>
 
-typedef struct           flag_list
+# define RED        "\x1b[31m"
+# define GREEN      "\x1b[32m"
+# define YELLOW     "\x1b[33m"
+# define BLUE       "\x1b[34m"
+# define MAGENTA    "\x1b[35m"
+# define CYAN       "\x1b[36m"
+# define RESET      "\x1b[0m"
+# define WHITE      "\033[0m"
+
+/*
+typedef struct      s_list
+{
+    void            *content;
+    size_t          content_size;
+    struct s_list   *next;
+}   
+*/
+// STRUCTURI
+
+typedef struct  s_max
+{
+    int         max_size_len;
+    int         max_hard_links_len;
+    int         max_owner_len;
+    int         max_group_len;
+    int         max_major;
+    int         max_minor;
+}               t_max;
+
+typedef struct           flag_lis
 {
      int l;
      int r_upper;
@@ -61,6 +90,35 @@ typedef struct      d_lst
     struct  group   *gr;
     char    *permis;
     struct  d_lst  *next;
+    int32_t         major;
+    int32_t         minor;
 }                        s_list;
+
+// PROTOTIPURI
+
+void insert(struct dirent *d, char *path, char *str);
+s_list *SortedMerge(s_list *a, s_list *b);
+s_list *SortedMerget(s_list *a, s_list *b);
+void FrontBackSplit(s_list *source,
+        s_list **frontRef, s_list **backRef);
+int ls(char *str);
+void    print_l();
+void print_name();
+void error(char *str);
+void reverse(s_list **head_ref);
+void searchflag(char *str);
+int     flag(char *str);
+void fuckof(char str);
+int in(char *str, char str2);
+int minmin(char *str);
+void MergeSort(s_list **headRef);
+void    display_file(char *str);
+
+//GLOBALE
+
+flag_list   flaguri;
+s_list      *head;
+int  g_p;
+int g_flagprove;
 
 #endif
