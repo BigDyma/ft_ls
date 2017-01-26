@@ -13,14 +13,16 @@
 
 #include "ft_ls.h"
 
-char filepath[250], filename[250];
+# define DOHUIA 60000
+
+char filepath[DOHUIA + 1], filename[DOHUIA + 1];
 
 void listdir(char *dir)
 {
-	printf("name: %s\n",dir);
+	printf(" HUIAK \n\n %s :\n",dir);
     DIR *dp;
 	struct dirent *entry;
-	 struct stat statbuf;
+	struct stat statbuf;
    
     if((dp = opendir(dir)) == NULL) 
     {
@@ -28,7 +30,6 @@ void listdir(char *dir)
         return;
     }
     chdir(dir);
-
     while((entry = readdir(dp)) != NULL) 
     {
         if(lstat(entry->d_name, &statbuf) == 0)
@@ -49,20 +50,36 @@ void listdir(char *dir)
 		/* cleanup filepath */
 			filepath[len] = '\0';
                 listdir(entry->d_name);
+               
             }
             else
             {
                 // Concatenate file name
                 strcpy(filename, filepath);
                 strcat(filename, entry->d_name);
-                puts(filename);
+                //puts(filename);
+               // error(entry->d_name);
+                printf("%s\n",entry->d_name);
+               
             }
         }
     }
-
     chdir("..");
     closedir(dp);
 }
+void recurs()
+{
+	s_list *temp = (s_list*)malloc(sizeof(s_list) * 2);
+	temp = head;
+	while (temp)
+	{
+		if (temp->permis[0] == 'd')
+			listdir(temp->name);
+
+		temp = temp->next;
+	}
+}
+
 int ls(char *str)
 {
 	struct dirent *d;
@@ -107,16 +124,15 @@ int ls(char *str)
 	if (flaguri.r_upper == 1)
 	{
 		printf("Huiak \n");
-		
-		listdir(head->path);
+		recurs();
+		listdir(".");
 	}
 	}
-	
-
 	//allfree();
 	closedir(dir);
 	return (1);
 }
+
 char    *permis(struct stat *elem)
 {
 	if(S_ISFIFO(elem->st_mode))
@@ -238,4 +254,103 @@ int main(int av, char **ac)
 	parse(ac, av);
 	//printf("flagul R:%d\n",flaguri.r_upper);
 	return (0);
+}
+
+
+    
+    #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct node
+{
+  char nume[200];
+  char familie[200];
+} node;
+
+int valid(char c)
+{
+   return (c >= 'a' && c <= 'z' || c <= 'Z' && c >= 'A' || c <= '9' && c >= '0');
+}
+
+void searchName(node *data, int col)
+{
+    node temp;
+    int i = 0;
+    int j = 0;
+   for (i = 0; i < col - 1; i++)
+        for (j = i + 1; j < col; j++)
+        {
+            printf("\n|%d %d|->%s<- ->%s<-",i, j, data[i].nume, data[j].nume);
+            if (strcmp(data[i].nume, data[j].nume) == 0)
+            {
+               // ft_swap(&data[i].nume, &data[i].familie);
+                char aux[200];
+                strcpy(aux , data[i].nume);
+                strcpy(data[i].nume ,data[i].familie);
+                strcpy(data[i].familie , aux);
+                printf("\n-------------------------\n%s \t %s", data[i].nume, data[i].familie);
+                break;
+            }
+        }
+}
+int main()
+ {
+    char line[1024];
+    node data[70];
+    node temp;
+    int i = 0;
+    int col = 0;
+    int fam = 0;
+    int num = 0;
+    freopen("file.txt","r", stdin);
+    int space = 0;
+    while( fgets(line,1024,stdin) )
+    {
+        fam = 0;
+        num = 0;
+        i = 0;
+        space = 0;
+            while (line[i])
+            {
+                 if (line[i] <= 32)
+                 {
+                   space = 1;
+                 }
+                if (space == 0)
+                {
+                    data[col].familie[fam] = line[i];
+                    fam++;
+                }
+                else if (space == 1 && valid(line[i]))
+                {
+                    data[col].nume[num] = line[i];
+                    num++;
+                }
+                i++;
+            }
+        data[col].familie[fam] = '\0';
+        data[col].nume[num] = '\0';
+        col++;
+    }
+    int j = 0;
+
+    searchName(data, col);
+    for (i = 0; i < col; i++)
+    {
+        for ( j = i + 1; j < col; j++)
+        {
+            if (strcmp(data[i].familie, data[j].familie) > 0)
+            {
+                temp = data[i];
+                data[i] = data[j];
+                data[j] = temp;
+            }
+        }
+    }
+    i = 0;
+    printf("is Daun\n");
+     for (i = 0; i < col; i++)
+         printf("\nfamilie:%s \tnume:%s\n", data[i].familie, data[i].nume);
+    return 0;
 }
