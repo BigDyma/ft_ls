@@ -96,6 +96,7 @@ typedef struct      d_lst
 
 // PROTOTIPURI
 
+void print_name_by_list(s_list *temp);
 void insert(struct dirent *d, char *path, char *str);
 s_list *SortedMerge(s_list *a, s_list *b);
 s_list *SortedMerget(s_list *a, s_list *b);

@@ -17,27 +17,67 @@
 
 char filepath[DOHUIA + 1], filename[DOHUIA + 1];
 
-void listdir(char *dir)
+int 	 put_the_fuck_in(s_list *temp, struct dirent *d, char *path)
 {
-	///printf(" HUIAK \n\n %s :\n",dir);
-    DIR *dp;
-	struct dirent *entry;
-	struct stat statbuf;
-   
-    if((dp = opendir(dir)) == NULL) 
-    {
-        fprintf(stderr,"cannot open directory: %s\n", dir);
-        return;
-    }
-    chdir(dir);
-    while((entry = readdir(dp)) != NULL) 
-    {
-      
-    }
-    chdir("..");
-    closedir(dp);
+	if (temp == NULL)
+		return (0);
+	s_list *link = (s_list*)malloc(sizeof(s_list) + 1);
+    struct  stat my_stat;
+    char    *store;
+    link->name = d->d_name;
+    link->path = path;
+    link->parent = str;
+    link->next = temp;
+    lstat(path,&my_stat);
+    g_p+=(int)my_stat.st_blocks;
+    link->size = my_stat.st_size;
+    link->date = my_stat.st_ctime;
+    link->nlink = my_stat.st_nlink;
+    link->uid = my_stat.st_uid;
+    struct passwd *pw = getpwuid(link->uid);
+    link->gid = my_stat.st_gid;
+    struct group  *gr = getgrgid(link->gid);
+    link->pw = pw;
+    link->gr = gr;
+    link->blocks = my_stat.st_blocks;
+    store = ft_strnew(1);
+    store = ft_strjoin(store, permis(&my_stat));
+    store = ft_strjoin(store, (my_stat.st_mode & S_IRUSR) ? "r" : "-");
+    store = ft_strjoin(store, (my_stat.st_mode & S_IWUSR) ? "w" : "-");
+    store = ft_strjoin(store, (my_stat.st_mode & S_IXUSR) ? "x" : "-");
+    store = ft_strjoin(store, (my_stat.st_mode & S_IRGRP) ? "r" : "-");
+    store = ft_strjoin(store, (my_stat.st_mode & S_IWGRP) ? "w" : "-");
+    store = ft_strjoin(store, (my_stat.st_mode & S_IXGRP) ? "x" : "-");
+    store = ft_strjoin(store, (my_stat.st_mode & S_IROTH) ? "r" : "-");
+    store = ft_strjoin(store, (my_stat.st_mode & S_IWOTH) ? "w" : "-");
+    store = ft_strjoin(store, (my_stat.st_mode & S_IXOTH) ? "x" : "-");
+    link->permis = store;
+    temp = link;
+    return (1);
 }
-void recurs(char *str, char *permis)
+
+void listdir(char *path)
+{
+	s_list *files;
+	DIR *dir;
+	struct dirent d*;
+	printf("\n");
+	printf(" %s : \n",files->name);
+	files = (s_list*)malloc(sizeof(s_list) * sizeof(files) * 10 + 1);
+	files = NULL;
+	if (d = readdir(path) != NULL)
+	{
+		while (put_the_fuck_in(&files, readdir(dir), ft_strjoin(path, "/"), arg) != 0)
+			;
+		closedir(dir);
+		if (files)
+		{
+			print_name_by_list(files);
+		}
+		files = NULL;
+	}
+}
+void recurs(s_list *files)\
 {
     if (str != NULL && permis[0] == 'd')
         listdir(str);
@@ -45,10 +85,11 @@ void recurs(char *str, char *permis)
 	temp = head;
 	while (temp)
 	{
-		if (temp->permis[0] == 'd')
+		if (temp->permis[0] == 'd' && temp->name)
 			listdir(temp->name);
 		temp = temp->next;
 	}
+	free(temp);
 }
 
 int ls(char *str)

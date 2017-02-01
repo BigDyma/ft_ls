@@ -1,5 +1,16 @@
 #include "ft_ls.h"
 
+void 	print_name_by_list(s_list *temp)
+{
+	s_list *current;
+	current = temp;
+	while (current != NULL)
+	{
+		printf("%s\n",current->name);
+		current=current->next;
+	}
+}
+
 void print_name()
 {
 	s_list *temp;
