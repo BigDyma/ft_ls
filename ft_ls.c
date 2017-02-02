@@ -16,7 +16,7 @@
 # define DOHUIA 60000
 
 char filepath[DOHUIA + 1], filename[DOHUIA + 1];
-
+char    *permis(struct stat *elem);
 int 	 put_the_fuck_in(s_list *temp, struct dirent *d, char *path)
 {
 	if (temp == NULL)
@@ -26,7 +26,7 @@ int 	 put_the_fuck_in(s_list *temp, struct dirent *d, char *path)
     char    *store;
     link->name = d->d_name;
     link->path = path;
-    link->parent = str;
+    //link->parent = str;
     link->next = temp;
     lstat(path,&my_stat);
     g_p+=(int)my_stat.st_blocks;
@@ -58,16 +58,16 @@ int 	 put_the_fuck_in(s_list *temp, struct dirent *d, char *path)
 
 void listdir(char *path)
 {
-	s_list *files;
+	s_list *files = NULL;
 	DIR *dir;
-	struct dirent d*;
+	//struct dirent *d;
 	printf("\n");
 	printf(" %s : \n",files->name);
 	files = (s_list*)malloc(sizeof(s_list) * sizeof(files) * 10 + 1);
 	files = NULL;
-	if (d = readdir(path) != NULL)
+	if ((dir = opendir(path)) != NULL)
 	{
-		while (put_the_fuck_in(&files, readdir(dir), ft_strjoin(path, "/"), arg) != 0)
+		while (put_the_fuck_in(files, readdir(dir), ft_strjoin(path, "/")) != 0)
 			;
 		closedir(dir);
 		if (files)
@@ -77,10 +77,8 @@ void listdir(char *path)
 		files = NULL;
 	}
 }
-void recurs(s_list *files)\
+void recurs()
 {
-    if (str != NULL && permis[0] == 'd')
-        listdir(str);
 	s_list *temp = (s_list*)malloc(sizeof(s_list) * 2);
 	temp = head;
 	while (temp)
@@ -135,9 +133,7 @@ int ls(char *str)
 		}
 	if (flaguri.r_upper == 1)
 	{
-		printf("Huiak \n");
-        printf("%s\n", head->name);
-		recurs(head->name, head->permis);
+		recurs();
 		//listdir(head->name);
 	}
 	}
