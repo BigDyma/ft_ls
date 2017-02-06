@@ -130,7 +130,7 @@ void suka_ls_dinah(char *str)
 	{
 		i++;
 	}
-	str[i-1] = '\0';
+	str[i - 1] = (str[i-1] == '.') ? '\0' : str[i-1];
 }
 void listdir(char *path)
 {
@@ -146,7 +146,7 @@ void listdir(char *path)
 	dir = opendir(path);
 	if (dir != NULL)
 	{
-		printf("inainte de while ZAEBISI\n");
+		printf("inainte de while path\n");
 		//while (put_the_fuck_in(&files, readdir(dir), ft_strjoin(path, "/")) != 0)
 		//	;
 		while ((d = readdir(dir)))
@@ -167,29 +167,29 @@ void listdir(char *path)
 		{
 			if (flaguri.r == 1)
 			{	
-				reverse(&head);
+				reverse(&files);
 			}
 		if (flaguri.r_upper == 1)
 		{
-			printf("inainte de recursie -- DONE!\n");
+			printf("ahuencik\n");
 			print_name_by_list(files);
 			recurs(files);
 			//listdir(head->name);
 		}
 			//printf("PIZDIK%s\n",files->name);
-
-		files = NULL;
+		// files = NULL;
+	return;
 	}
 	//else
 	//{
 	//	error(path);
 	//}
-}
-else
-{
-	printf("URA\n");
-	exit(1);
-}
+	}
+	else
+	{
+		printf("URA\n");
+		return;
+	}
 }
 void recurs(s_list *temp)
 {
@@ -199,11 +199,12 @@ void recurs(s_list *temp)
 
 	while (pizd)
 	{
-				printf("inainte de while -- DONE\n");
-		if (pizd->permis[0] == 'd' && ft_strcmp(pizd->name, ".") && ft_strcmp(pizd->name, "..") && (flaguri.a == 0 && pizd->name[0] != '.') && pizd->name != NULL)
+				printf("AQAAAAAAAAAAAAA %s \n", pizd->path);
+		if (pizd->permis[0] == 'd' && ft_strcmp(pizd->name, ".") && ft_strcmp(pizd->name, ".."))
 		{
-			printf("O intrat in if ZAEBISI\n");
-			printf("HUIAKk11\n");
+			printf("New path\n");
+			// pizd->path = ft_strjoin(pizd->path, "/");
+			// pizd->path = ft_strjoin(pizd->path, pizd->name);
 			listdir(pizd->path);
 		}
 		pizd = pizd->next;
@@ -258,7 +259,7 @@ int ls(char *str)
 		printf("inainte de recursie -- DONE!\n");
 		temp = head;
 		recurs(temp);
-		//listdir(head->name);
+		// listdir(head->name);
 	}
 	}
 	//allfree();
