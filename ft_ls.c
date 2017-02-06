@@ -17,11 +17,12 @@
 
 char filepath[DOHUIA + 1], filename[DOHUIA + 1];
 char    *permis(struct stat *elem);
+void  recurs(s_list *temp);
 s_list	*elemnew(char *name, char *path)
 {
 	s_list			*elem;
 	struct stat		fstat;
-
+	char *store;
 	elem = malloc(sizeof(s_list) * sizeof(elem) * 10 + 1);
 	elem->name = ft_strdup(name);	
 	printf("%s\n",elem->name );
@@ -36,6 +37,18 @@ s_list	*elemnew(char *name, char *path)
 	elem->gid = fstat.st_gid;
 	elem->size = fstat.st_size;
 	elem->blocks = fstat.st_blocks;
+	store = ft_strnew(1);
+    store = ft_strjoin(store, permis(&fstat));
+    store = ft_strjoin(store, (fstat.st_mode & S_IRUSR) ? "r" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IWUSR) ? "w" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IXUSR) ? "x" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IRGRP) ? "r" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IWGRP) ? "w" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IXGRP) ? "x" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IROTH) ? "r" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IWOTH) ? "w" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IXOTH) ? "x" : "-");
+    elem->permis = store;
 	//elem->date = (arg.u == 1 ? fstat.st_atime : fstat.st_mtime);
 	//elem->st_rdev = fstat.st_rdev;
 	elem->next = NULL;
@@ -107,7 +120,7 @@ int		put_the_fuck_in(s_list **files, struct dirent *file, char *path)
 //     store = ft_strjoin(store, (my_stat.st_mode & S_IWOTH) ? "w" : "-");
 //     store = ft_strjoin(store, (my_stat.st_mode & S_IXOTH) ? "x" : "-");
 //     link->permis = store;
-//     temp = link;
+// //     temp = link;
 //     return (1);
 // }
 void suka_ls_dinah(char *str)
@@ -144,41 +157,65 @@ void listdir(char *path)
 			else if (d->d_name[0] != '.')
 				put_the_fuck_in(&files, d, ft_strjoin(path, "/"));
 		}
-			//printf("PIZDIK%s\n",files->name);
-			closedir(dir);
-		if (files)
+					closedir(dir);
+		MergeSort(&files);
+		if (g_flagprove == 0)
 		{
-			print_name_by_list(files);
+			print_name();
 		}
+		else
+		{
+			if (flaguri.r == 1)
+			{	
+				reverse(&head);
+			}
+		if (flaguri.r_upper == 1)
+		{
+			printf("inainte de recursie -- DONE!\n");
+			print_name_by_list(files);
+			recurs(files);
+			//listdir(head->name);
+		}
+			//printf("PIZDIK%s\n",files->name);
+
 		files = NULL;
 	}
 	//else
 	//{
 	//	error(path);
 	//}
-
 }
-void recurs()
+else
 {
-	s_list *temp = (s_list*)malloc(sizeof(s_list) * 2);
-	temp = head;
-	printf("inainte de while -- DONE\n");
-	while (temp)
+	printf("URA\n");
+	exit(1);
+}
+}
+void recurs(s_list *temp)
+{
+
+	s_list *pizd;
+	pizd = temp;
+
+	while (pizd)
 	{
-		if (temp->permis[0] == 'd' && ft_strcmp(temp->name, ".") && ft_strcmp(temp->name, "..") && (flaguri.a == 0 && temp->name[0] != '.') && temp->name != NULL)
+				printf("inainte de while -- DONE\n");
+		if (pizd->permis[0] == 'd' && ft_strcmp(pizd->name, ".") && ft_strcmp(pizd->name, "..") && (flaguri.a == 0 && pizd->name[0] != '.') && pizd->name != NULL)
 		{
+			printf("O intrat in if ZAEBISI\n");
 			printf("HUIAKk11\n");
-			listdir(temp->path);
+			listdir(pizd->path);
 		}
-		temp = temp->next;
+		pizd = pizd->next;
 	}
-	free(temp);
+	free(pizd);
 }
 
 int ls(char *str)
 {
 	struct dirent *d;
 	DIR *dir;
+	s_list *temp = (s_list*)malloc(sizeof(s_list) * 1000);
 	char *buf = (char *)malloc(sizeof(char) * 10);
 	g_p = 0;
 	if ((dir = opendir(str)) == NULL)
@@ -219,7 +256,8 @@ int ls(char *str)
 	if (flaguri.r_upper == 1)
 	{
 		printf("inainte de recursie -- DONE!\n");
-		recurs();
+		temp = head;
+		recurs(temp);
 		//listdir(head->name);
 	}
 	}
