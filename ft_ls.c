@@ -17,74 +17,159 @@
 
 char filepath[DOHUIA + 1], filename[DOHUIA + 1];
 char    *permis(struct stat *elem);
-int 	 put_the_fuck_in(s_list *temp, struct dirent *d, char *path)
+s_list	*elemnew(char *name, char *path)
 {
-	if (temp == NULL)
-		return (0);
-	s_list *link = (s_list*)malloc(sizeof(s_list) + 1);
-    struct  stat my_stat;
-    char    *store;
-    link->name = d->d_name;
-    link->path = path;
-    //link->parent = str;
-    link->next = temp;
-    lstat(path,&my_stat);
-    g_p+=(int)my_stat.st_blocks;
-    link->size = my_stat.st_size;
-    link->date = my_stat.st_ctime;
-    link->nlink = my_stat.st_nlink;
-    link->uid = my_stat.st_uid;
-    struct passwd *pw = getpwuid(link->uid);
-    link->gid = my_stat.st_gid;
-    struct group  *gr = getgrgid(link->gid);
-    link->pw = pw;
-    link->gr = gr;
-    link->blocks = my_stat.st_blocks;
-    store = ft_strnew(1);
-    store = ft_strjoin(store, permis(&my_stat));
-    store = ft_strjoin(store, (my_stat.st_mode & S_IRUSR) ? "r" : "-");
-    store = ft_strjoin(store, (my_stat.st_mode & S_IWUSR) ? "w" : "-");
-    store = ft_strjoin(store, (my_stat.st_mode & S_IXUSR) ? "x" : "-");
-    store = ft_strjoin(store, (my_stat.st_mode & S_IRGRP) ? "r" : "-");
-    store = ft_strjoin(store, (my_stat.st_mode & S_IWGRP) ? "w" : "-");
-    store = ft_strjoin(store, (my_stat.st_mode & S_IXGRP) ? "x" : "-");
-    store = ft_strjoin(store, (my_stat.st_mode & S_IROTH) ? "r" : "-");
-    store = ft_strjoin(store, (my_stat.st_mode & S_IWOTH) ? "w" : "-");
-    store = ft_strjoin(store, (my_stat.st_mode & S_IXOTH) ? "x" : "-");
-    link->permis = store;
-    temp = link;
-    return (1);
+	s_list			*elem;
+	struct stat		fstat;
+
+	elem = malloc(sizeof(s_list) * sizeof(elem) * 10 + 1);
+	elem->name = ft_strdup(name);	
+	printf("%s\n",elem->name );
+	elem->path = ft_strjoin(path, name);
+	if (lstat(elem->path, &fstat) == -1)
+	{
+		//basicerror("ft_ls: ", elem->name, 1);
+		return (NULL);
+	}
+	elem->nlink = fstat.st_nlink;
+	elem->uid = fstat.st_uid;
+	elem->gid = fstat.st_gid;
+	elem->size = fstat.st_size;
+	elem->blocks = fstat.st_blocks;
+	//elem->date = (arg.u == 1 ? fstat.st_atime : fstat.st_mtime);
+	//elem->st_rdev = fstat.st_rdev;
+	elem->next = NULL;
+	return (elem);
 }
 
+int		put_the_fuck_in(s_list **files, struct dirent *file, char *path)
+{
+	s_list	*list;
+
+	list = *files;
+	if (!file)
+		return (0);
+	if (list)
+	{
+		while (list->next)
+			list = list->next;
+		list->next = elemnew(file->d_name, path);
+	}
+		*files = list;
+	return (1);
+}
+
+// void	elemgetfiles(s_list **files, char *name, char *path)
+// {
+// 	s_list *list;
+// 	list = *files;
+// 	if (list)
+// 	{
+// 		while (list->next)
+// 			list = list->next;
+// 		list->next = elemnew(name, path, arg);
+// 	}
+// 	else
+// 		*files = elemnew(name, path, arg);
+// }
+// int 	 put_the_fuck_in(s_list *temp, struct dirent *d, char *path)
+// {
+// 	if (temp == NULL)
+// 		return (0);
+// 	s_list *link = (s_list*)malloc(sizeof(s_list) + 1);
+//     struct  stat my_stat;
+//     char    *store;
+//     link->name = d->d_name;
+//     link->path = path;
+//     //link->parent = str;
+//     link->next = temp;
+//     lstat(path,&my_stat);
+//     g_p+=(int)my_stat.st_blocks;
+//     link->size = my_stat.st_size;
+//     link->date = my_stat.st_ctime;
+//     link->nlink = my_stat.st_nlink;
+//     link->uid = my_stat.st_uid;
+//     struct passwd *pw = getpwuid(link->uid);
+//     link->gid = my_stat.st_gid;
+//     struct group  *gr = getgrgid(link->gid);
+//     link->pw = pw;
+//     link->gr = gr;
+//     link->blocks = my_stat.st_blocks;
+//     store = ft_strnew(1);
+//     store = ft_strjoin(store, permis(&my_stat));
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IRUSR) ? "r" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IWUSR) ? "w" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IXUSR) ? "x" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IRGRP) ? "r" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IWGRP) ? "w" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IXGRP) ? "x" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IROTH) ? "r" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IWOTH) ? "w" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IXOTH) ? "x" : "-");
+//     link->permis = store;
+//     temp = link;
+//     return (1);
+// }
+void suka_ls_dinah(char *str)
+{
+	int i = 0;
+	while (str[i])
+	{
+		i++;
+	}
+	str[i-1] = '\0';
+}
 void listdir(char *path)
 {
 	s_list *files = NULL;
 	DIR *dir;
-	//struct dirent *d;
-	printf("\n");
-	printf(" %s : \n",files->name);
+	struct dirent *d;
 	files = (s_list*)malloc(sizeof(s_list) * sizeof(files) * 10 + 1);
-	files = NULL;
-	if ((dir = opendir(path)) != NULL)
+	//char *buf = (char *)malloc(sizeof(char) * 10);
+	printf("\n");
+	//printf("list dir -- DONE\n");
+	suka_ls_dinah(path);
+		printf(" %s : \n",path);
+	dir = opendir(path);
+	if (dir != NULL)
 	{
-		while (put_the_fuck_in(files, readdir(dir), ft_strjoin(path, "/")) != 0)
-			;
-		closedir(dir);
+		printf("inainte de while ZAEBISI\n");
+		//while (put_the_fuck_in(&files, readdir(dir), ft_strjoin(path, "/")) != 0)
+		//	;
+		while ((d = readdir(dir)))
+		{		
+		//	printf("huuuiiaaak\n");
+			if (flaguri.a)
+				put_the_fuck_in(&files, d, ft_strjoin(path, "/"));
+			else if (d->d_name[0] != '.')
+				put_the_fuck_in(&files, d, ft_strjoin(path, "/"));
+		}
+			//printf("PIZDIK%s\n",files->name);
+			closedir(dir);
 		if (files)
 		{
 			print_name_by_list(files);
 		}
 		files = NULL;
 	}
+	//else
+	//{
+	//	error(path);
+	//}
+
 }
 void recurs()
 {
 	s_list *temp = (s_list*)malloc(sizeof(s_list) * 2);
 	temp = head;
+	printf("inainte de while -- DONE\n");
 	while (temp)
 	{
-		if (temp->permis[0] == 'd' && temp->name)
-			listdir(temp->name);
+		if (temp->permis[0] == 'd' && ft_strcmp(temp->name, ".") && ft_strcmp(temp->name, "..") && (flaguri.a == 0 && temp->name[0] != '.') && temp->name != NULL)
+		{
+			printf("HUIAKk11\n");
+			listdir(temp->path);
+		}
 		temp = temp->next;
 	}
 	free(temp);
@@ -133,6 +218,7 @@ int ls(char *str)
 		}
 	if (flaguri.r_upper == 1)
 	{
+		printf("inainte de recursie -- DONE!\n");
 		recurs();
 		//listdir(head->name);
 	}
@@ -166,7 +252,7 @@ void insert(struct dirent *d, char *path, char *str)
     struct  stat my_stat;
     char    *store;
     link->name = d->d_name;
-    link->path = path;
+    link->path = ft_strjoin(path, str);
     link->parent = str;
     link->next = head;
     lstat(path,&my_stat);
