@@ -92,7 +92,7 @@ int  put_the_fuck_in_push(s_list **headd, struct dirent *d, char *path)
     link->name = ft_strdup(d->d_name);
     link->path = ft_strjoin(path, d->d_name);
     link->parent = path;
-    lstat(path,&my_stat);
+    lstat(link->path,&my_stat);
     link->size = my_stat.st_size;
     link->date = my_stat.st_ctime;
     link->nlink = my_stat.st_nlink;
@@ -121,21 +121,47 @@ int  put_the_fuck_in_push(s_list **headd, struct dirent *d, char *path)
     (*headd) = link;
     return (1);
 }
-// void	elemgetfiles(s_list **files, char *name, char *path)
-// {
-// 	s_list *list;
-// 	list = *files;
-// 	if (list)
-// 	{
-// 		while (list->next)
-// 			list = list->next;
-// 		list->next = elemnew(name, path, arg);
-// 	}
-// 	else
-// 		*files = elemnew(name, path, arg);
-// }
 
-void suka_ls_dinah(char *str)
+// void put_the_fuck_in_push(s_list **headd, struct dirent *d, char *path, char *str)
+// {
+// 	s_list *link = (s_list*)malloc(sizeof(s_list) * 4096);
+//     struct  stat my_stat;
+//     char    *store;
+//     if (!d)
+//     	return;
+//     link->name = ft_strdup(d->d_name);
+//     link->path = ft_strjoin(path, str);
+//     link->parent = str;
+//     lstat(path,&my_stat);
+//     g_p+=(int)my_stat.st_blocks;
+//     link->size = my_stat.st_size;
+//     link->date = my_stat.st_ctime;
+//     link->st_mode = my_stat.st_mode;
+//     link->nlink = my_stat.st_nlink;
+//     link->uid = my_stat.st_uid;
+//     struct passwd *pw = getpwuid(link->uid);
+//     link->gid = my_stat.st_gid;
+//     struct group  *gr = getgrgid(link->gid);
+//     link->pw = pw;
+//     link->st_mode = my_stat.st_mode;
+//     link->gr = gr;
+//     link->blocks = my_stat.st_blocks;
+//     store = ft_strnew(1);
+//     store = ft_strjoin(store, permis(&my_stat));
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IRUSR) ? "r" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IWUSR) ? "w" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IXUSR) ? "x" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IRGRP) ? "r" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IWGRP) ? "w" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IXGRP) ? "x" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IROTH) ? "r" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IWOTH) ? "w" : "-");
+//     store = ft_strjoin(store, (my_stat.st_mode & S_IXOTH) ? "x" : "-");
+//     link->next = (*headd);
+//     link->permis = store;
+//     (*headd) = link;
+// }
+void filtreaza_bazaru_la_path(char *str)
 {
 	int i = 0;
 	while (str[i])
@@ -150,78 +176,77 @@ void listdir(char *path)
 	DIR *dir;
 	struct dirent *d;
 	int i = 0;
-	files = (s_list*)malloc(sizeof(s_list) * sizeof(files) * 10 + 1);
+	files = (s_list*)malloc(sizeof(s_list) * sizeof(files) * 4096 + 1);
 	printf("\n");
-	suka_ls_dinah(path);
-	//printf("WTFFFFF\n");
+	filtreaza_bazaru_la_path(path);
 	printf(" %s : \n",path);
 	dir = opendir(path);
+	char *buf = (char*)malloc(sizeof(char) * 4096 +1);
 
 	if (dir != NULL)
 	{
-		//printf("inainte de while path\n");
+		//printf("zoebisi dva raza nah\n");
 		while ((d = readdir(dir)))
 		{		
-		// ft_strcpy (buf, str);
-		// ft_strcat (buf, "/");
-		// ft_strcat (buf, d->d_name);
+			printf("zoebisi tretii raz nahoi\n");
+		  ft_strcpy (buf, path);
+		  ft_strcat (buf, "/"); 
+		  printf("%s\n",d->d_name );
 			if (i < 2)
 			{
-				//printf("iful 1\n");
 			if (flaguri.a)
-				put_the_fuck_in_append(&files, d, ft_strjoin(path, "/"));
+				put_the_fuck_in_append(&files, d, buf);
 			else if (d->d_name[0] != '.')
-				put_the_fuck_in_append(&files, d, ft_strjoin(path, "/"));
+				put_the_fuck_in_append(&files, d, buf);
 			}
 			else
 			{
-				//printf("iful 2\n");
 				if (flaguri.a)
-					put_the_fuck_in_push(&files, d, ft_strjoin(path, "/"));
+					put_the_fuck_in_push(&files, d, buf);
 				else if (d->d_name[0] != '.')
-					put_the_fuck_in_push(&files, d, ft_strjoin(path, "/"));
+					put_the_fuck_in_push(&files, d, buf);
 			}
 			i++;
 		}
 		closedir(dir);
 		MergeSort(&files);
-		//printf("??");
+		//printList(files);
 			if (flaguri.r_upper == 1)
 			{
-			//	printf("ahuencik\n");
-				printList(files);
 				//print_ll(files);
+				printList(files);
 				recurs(files);
-				//listdir(head->name);
 
 			}
-			//printf("PIZDIK%s\n",files->name);
 		files = NULL;
 	}
 }
 void recurs(s_list *temp)
 {
+	static int first = 0;
+	s_list *cur;
+	cur = temp;
 
-	s_list *pizd;
-	pizd = temp;
-
-	while (pizd)
+	while (cur)
 	{
-		if (pizd->name && pizd->path && S_ISDIR(pizd->st_mode) && ft_strcmp(pizd->name, ".") && ft_strcmp(pizd->name, ".."))
+		if (first == 1)		
+			printf("tot ce eGGzista%s\n",cur->path );
+		if (cur->name && cur->path && S_ISDIR(cur->st_mode) && ft_strcmp(cur->name, ".") && ft_strcmp(cur->name, ".."))
 		{
-			listdir(pizd->path);
+			listdir(cur->path);
 		}
-		pizd = pizd->next;
+		cur = cur->next;
 	}
-	free(pizd);
+	first++;
+	free(cur);
 }
 
 int ls(char *str)
 {
 	struct dirent *d;
 	DIR *dir;
-	s_list *temp = (s_list*)malloc(sizeof(s_list) * 1000);
-	char *buf = (char *)malloc(sizeof(char) * 10);
+	s_list *temp = (s_list*)malloc(sizeof(s_list) * 1024);
+	char *buf = (char *)malloc(sizeof(char) * 1024);
 	g_p = 0;
 	if ((dir = opendir(str)) == NULL)
 		return (0);
@@ -231,8 +256,6 @@ int ls(char *str)
 		ft_strcpy (buf, str);
 		ft_strcat (buf, "/");
 		ft_strcat (buf, d->d_name);
-		//printf("%s\n",buf);
-		//sprintf(buf,"%s/%s",str,d->d_name);
 		if (flaguri.a)
 			insert(d, buf, str);
 		else if (d->d_name[0] != '.')
@@ -263,10 +286,8 @@ int ls(char *str)
 		printf("inainte de recursie -- DONE!\n");
 		temp = head;
 		recurs(temp);
-		// listdir(head->name);
 	}
 	}
-	//allfree();
 	closedir(dir);
 	return (1);
 }
@@ -291,7 +312,7 @@ char    *permis(struct stat *elem)
 }
 void insert(struct dirent *d, char *path, char *str)
 {
-	s_list *link = (s_list*)malloc(sizeof(s_list) + 1);
+	s_list *link = (s_list*)malloc(sizeof(s_list) * 4096 + 1);
     struct  stat my_stat;
     char    *store;
     link->name = d->d_name;
@@ -327,7 +348,7 @@ void insert(struct dirent *d, char *path, char *str)
 }
 void    display_file(char *str)
 {
-    s_list *link = (s_list*) malloc(sizeof(s_list));
+    s_list *link = (s_list*) malloc(sizeof(s_list) * 4096);
     struct  stat my_stat;
     char    *store;
     lstat(str,&my_stat);
@@ -389,7 +410,7 @@ void	parse(char **ac, int len)
 
 int main(int av, char **ac)
 {
-	flaguri = *(flag_list*)malloc(sizeof(flag_list) + 2);
+	flaguri = *(flag_list*)malloc(sizeof(flag_list) * 4096 + 2);
 	parse(ac, av);
 	//printf("flagul R:%d\n",flaguri.r_upper);
 	return (0);
