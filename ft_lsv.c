@@ -21,6 +21,20 @@ void print_name()
 		temp=temp->next;
 	}
 }
+void	print_ll(s_list *headd)
+{
+	s_list *temp;
+	temp = headd;
+	while (temp != NULL)
+	{
+		printf("%s",temp->permis);
+		printf(" %d",(int)temp->nlink);
+		temp->timp = ctime(&temp->date) + 4;
+		temp->timp[12] = 0;
+		printf(" %s %s %5d %s %s\n",temp->pw->pw_name,temp->gr->gr_name,(int)temp->size, temp->timp, temp->name);
+		temp = temp->next;
+	}
+}
 void	print_l()
 {
 	s_list *temp;

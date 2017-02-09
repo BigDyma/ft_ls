@@ -18,66 +18,80 @@
 char filepath[DOHUIA + 1], filename[DOHUIA + 1];
 char    *permis(struct stat *elem);
 void  recurs(s_list *temp);
-// s_list	*elemnew(char *name, char *path)
-// {
-// 	s_list			*elem;
-// 	struct stat		fstat;
-// 	char *store;
-// 	elem = malloc(sizeof(s_list) * sizeof(elem) * 10 + 1);
-// 	elem->name = ft_strdup(name);	
-// 	 // printf("%s\n",elem->name );
-// 	elem->path = ft_strjoin(path, name);
-// 	if (lstat(elem->path, &fstat) == -1)
-// 	{
-// 		return (NULL);
-// 	}
-// 	elem->nlink = fstat.st_nlink;
-// 	elem->uid = fstat.st_uid;
-// 	elem->gid = fstat.st_gid;
-// 	elem->size = fstat.st_size;
-// 	elem->blocks = fstat.st_blocks;
-// 	store = ft_strnew(1);
-//     store = ft_strjoin(store, permis(&fstat));
-//     store = ft_strjoin(store, (fstat.st_mode & S_IRUSR) ? "r" : "-");
-//     store = ft_strjoin(store, (fstat.st_mode & S_IWUSR) ? "w" : "-");
-//     store = ft_strjoin(store, (fstat.st_mode & S_IXUSR) ? "x" : "-");
-//     store = ft_strjoin(store, (fstat.st_mode & S_IRGRP) ? "r" : "-");
-//     store = ft_strjoin(store, (fstat.st_mode & S_IWGRP) ? "w" : "-");
-//     store = ft_strjoin(store, (fstat.st_mode & S_IXGRP) ? "x" : "-");
-//     store = ft_strjoin(store, (fstat.st_mode & S_IROTH) ? "r" : "-");
-//     store = ft_strjoin(store, (fstat.st_mode & S_IWOTH) ? "w" : "-");
-//     store = ft_strjoin(store, (fstat.st_mode & S_IXOTH) ? "x" : "-");
-//     elem->permis = store;
-// 	//elem->st_rdev = fstat.st_rdev;
-// 	elem->next = NULL;
-// 	return (elem);
-// }
-
-// int		put_the_fuck_in(s_list **files, struct dirent *file, char *path)
-// {
-// 	s_list	*list;
-
-// 	list = *files;
-// 	if (!file)
-// 		return (0);
-// 	if (list)
-// 	{
-// 		while (list)
-// 			list = list->next;
-// 		list->next = elemnew(file->d_name, path);
-// 	}
-// 		*files = list;
-// 	return (1);
-// }
-void put_the_fuck_in(s_list *headd, struct dirent *d, char *path)
+s_list	*elemnew(char *name, char *path)
 {
-	s_list *link = (s_list*)malloc(sizeof(s_list) + 1);
+	s_list			*elem;
+	struct stat		fstat;
+	char *store;
+	elem = malloc(sizeof(s_list) * sizeof(elem) * 10000 + 1);
+	elem->name = ft_strdup(name);	
+	 // printf("%s\n",elem->name );
+	elem->path = ft_strjoin(path, name);
+	if (lstat(elem->path, &fstat) == -1)
+	{
+		return (NULL);
+	}
+	elem->nlink = fstat.st_nlink;
+	elem->uid = fstat.st_uid;
+	elem->gid = fstat.st_gid;
+	elem->size = fstat.st_size;
+	elem->st_mode = fstat.st_mode;
+	elem->blocks = fstat.st_blocks;
+	store = ft_strnew(1);
+    store = ft_strjoin(store, permis(&fstat));
+    store = ft_strjoin(store, (fstat.st_mode & S_IRUSR) ? "r" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IWUSR) ? "w" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IXUSR) ? "x" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IRGRP) ? "r" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IWGRP) ? "w" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IXGRP) ? "x" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IROTH) ? "r" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IWOTH) ? "w" : "-");
+    store = ft_strjoin(store, (fstat.st_mode & S_IXOTH) ? "x" : "-");
+    elem->permis = store;
+	elem->next = NULL;
+	return (elem);
+}
+
+void printList(s_list *node)
+{
+  while (node != NULL)
+  {
+     printf(" %s \n ", node->name);
+     node = node->next;
+  }
+}
+int		put_the_fuck_in_append(s_list **files, struct dirent *file, char *path)
+{
+	s_list	*last;
+
+	last = (*files);
+	if (!file)
+		return (0);
+	if (*files == NULL)
+	{
+		(*files) = elemnew(file->d_name, path);
+		return (1);
+	}
+	while (last->next)
+		last = last->next;
+	last->next = elemnew(file->d_name, path);
+	(*files) = last;
+	return (1);
+}
+
+
+int  put_the_fuck_in_push(s_list **headd, struct dirent *d, char *path)
+{
+	s_list *link = (s_list*)malloc(sizeof(s_list) * 10 + 1);
     struct  stat my_stat;
     char    *store;
-    link->name = d->d_name;
-    link->path = ft_strjoin(d->d_name, path);
+    if (!d)
+    	return (0);
+    //BEGIN put data
+    link->name = ft_strdup(d->d_name);
+    link->path = ft_strjoin(path, d->d_name);
     link->parent = path;
-    link->next = headd;
     lstat(path,&my_stat);
     link->size = my_stat.st_size;
     link->date = my_stat.st_ctime;
@@ -87,6 +101,7 @@ void put_the_fuck_in(s_list *headd, struct dirent *d, char *path)
     link->gid = my_stat.st_gid;
     struct group  *gr = getgrgid(link->gid);
     link->pw = pw;
+   	link->st_mode = my_stat.st_mode;
     link->gr = gr;
     link->blocks = my_stat.st_blocks;
     store = ft_strnew(1);
@@ -101,7 +116,10 @@ void put_the_fuck_in(s_list *headd, struct dirent *d, char *path)
     store = ft_strjoin(store, (my_stat.st_mode & S_IWOTH) ? "w" : "-");
     store = ft_strjoin(store, (my_stat.st_mode & S_IXOTH) ? "x" : "-");
     link->permis = store;
-    headd = link;
+    //END put data
+    link->next = (*headd);
+    (*headd) = link;
+    return (1);
 }
 // void	elemgetfiles(s_list **files, char *name, char *path)
 // {
@@ -131,10 +149,9 @@ void listdir(char *path)
 	s_list *files = NULL;
 	DIR *dir;
 	struct dirent *d;
+	int i = 0;
 	files = (s_list*)malloc(sizeof(s_list) * sizeof(files) * 10 + 1);
-	//char *buf = (char *)malloc(sizeof(char) * 10);
 	printf("\n");
-	//printf("list dir -- DONE\n");
 	suka_ls_dinah(path);
 	//printf("WTFFFFF\n");
 	printf(" %s : \n",path);
@@ -145,34 +162,41 @@ void listdir(char *path)
 		//printf("inainte de while path\n");
 		while ((d = readdir(dir)))
 		{		
-		//	printf("huuuiiaaak\n");
-			//printf("pizdik\n");
+		// ft_strcpy (buf, str);
+		// ft_strcat (buf, "/");
+		// ft_strcat (buf, d->d_name);
+			if (i < 2)
+			{
+				//printf("iful 1\n");
 			if (flaguri.a)
-				put_the_fuck_in(files, d, ft_strjoin(path, "/"));
+				put_the_fuck_in_append(&files, d, ft_strjoin(path, "/"));
 			else if (d->d_name[0] != '.')
-				put_the_fuck_in(files, d, ft_strjoin(path, "/"));
+				put_the_fuck_in_append(&files, d, ft_strjoin(path, "/"));
+			}
+			else
+			{
+				//printf("iful 2\n");
+				if (flaguri.a)
+					put_the_fuck_in_push(&files, d, ft_strjoin(path, "/"));
+				else if (d->d_name[0] != '.')
+					put_the_fuck_in_push(&files, d, ft_strjoin(path, "/"));
+			}
+			i++;
 		}
 		closedir(dir);
 		MergeSort(&files);
 		//printf("??");
 			if (flaguri.r_upper == 1)
 			{
-				//printf("ahuencik\n");
-				print_name_by_list(files);
+			//	printf("ahuencik\n");
+				printList(files);
+				//print_ll(files);
 				recurs(files);
 				//listdir(head->name);
+
 			}
 			//printf("PIZDIK%s\n",files->name);
-		// files = NULL;
-	//else
-	//{
-	//	error(path);
-	//}
-	}
-	else
-	{
-		printf("URA\n");
-		return;
+		files = NULL;
 	}
 }
 void recurs(s_list *temp)
@@ -183,12 +207,8 @@ void recurs(s_list *temp)
 
 	while (pizd)
 	{
-				//printf("AQAAAAAAAAAAAAA %s \n", pizd->path);
-		if (pizd->permis[0] == 'd' && ft_strcmp(pizd->name, ".") && ft_strcmp(pizd->name, ".."))
+		if (pizd->name && pizd->path && S_ISDIR(pizd->st_mode) && ft_strcmp(pizd->name, ".") && ft_strcmp(pizd->name, ".."))
 		{
-		//	printf("New path\n");
-			// pizd->path = ft_strjoin(pizd->path, "/");
-			// pizd->path = ft_strjoin(pizd->path, pizd->name);
 			listdir(pizd->path);
 		}
 		pizd = pizd->next;
@@ -282,6 +302,7 @@ void insert(struct dirent *d, char *path, char *str)
     g_p+=(int)my_stat.st_blocks;
     link->size = my_stat.st_size;
     link->date = my_stat.st_ctime;
+    link->st_mode = my_stat.st_mode;
     link->nlink = my_stat.st_nlink;
     link->uid = my_stat.st_uid;
     struct passwd *pw = getpwuid(link->uid);

@@ -6,7 +6,7 @@
 /*   By: dstrelet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/28 16:56:49 by dstrelet          #+#    #+#             */
-/*   Updated: 2017/01/23 13:57:34 by dstrelet         ###   ########.fr       */
+/*   Updated: 2017/02/09 13:17:00 by dstrelet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FT_LS_H
@@ -95,7 +95,7 @@ typedef struct      d_lst
 }                        s_list;
 
 // PROTOTIPURI
-
+void print_ll(s_list *headd);
 void print_name_by_list(s_list *temp);
 void insert(struct dirent *d, char *path, char *str);
 s_list *SortedMerge(s_list *a, s_list *b);
