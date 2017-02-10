@@ -24,7 +24,7 @@ s_list	*elemnew(char *name, char *path)
 	struct stat		fstat;
 	char *store;
 	elem = malloc(sizeof(s_list) * sizeof(elem) * 10000 + 1);
-	elem->name = ft_strdup(name);	
+	elem->name = ft_strdup(name);
 	 // printf("%s\n",elem->name );
 	elem->path = ft_strjoin(path, name);
 	if (lstat(elem->path, &fstat) == -1)
@@ -57,9 +57,27 @@ void printList(s_list *node)
 {
   while (node != NULL)
   {
-     printf(" %s \n ", node->name);
+     printf(" -%s \n ", node->name);
      node = node->next;
   }
+}
+void filtreaza_bazaru_la_lista(s_list **temp)
+{
+	s_list *cur = *temp, *prev;
+		if (cur->name == NULL && cur != NULL)
+		{
+			*temp = cur->next;
+			free(cur);
+			return;
+		}
+		while (cur != NULL && cur->name != NULL)
+		{
+			prev = cur;
+			cur = cur->next;
+		}
+		if (cur == NULL) return;
+		prev->next = cur->next;
+		free(cur);
 }
 int		put_the_fuck_in_append(s_list **files, struct dirent *file, char *path)
 {
@@ -79,8 +97,6 @@ int		put_the_fuck_in_append(s_list **files, struct dirent *file, char *path)
 	(*files) = last;
 	return (1);
 }
-
-
 int  put_the_fuck_in_push(s_list **headd, struct dirent *d, char *path)
 {
 	s_list *link = (s_list*)malloc(sizeof(s_list) * 10 + 1);
@@ -121,46 +137,6 @@ int  put_the_fuck_in_push(s_list **headd, struct dirent *d, char *path)
     (*headd) = link;
     return (1);
 }
-
-// void put_the_fuck_in_push(s_list **headd, struct dirent *d, char *path, char *str)
-// {
-// 	s_list *link = (s_list*)malloc(sizeof(s_list) * 4096);
-//     struct  stat my_stat;
-//     char    *store;
-//     if (!d)
-//     	return;
-//     link->name = ft_strdup(d->d_name);
-//     link->path = ft_strjoin(path, str);
-//     link->parent = str;
-//     lstat(path,&my_stat);
-//     g_p+=(int)my_stat.st_blocks;
-//     link->size = my_stat.st_size;
-//     link->date = my_stat.st_ctime;
-//     link->st_mode = my_stat.st_mode;
-//     link->nlink = my_stat.st_nlink;
-//     link->uid = my_stat.st_uid;
-//     struct passwd *pw = getpwuid(link->uid);
-//     link->gid = my_stat.st_gid;
-//     struct group  *gr = getgrgid(link->gid);
-//     link->pw = pw;
-//     link->st_mode = my_stat.st_mode;
-//     link->gr = gr;
-//     link->blocks = my_stat.st_blocks;
-//     store = ft_strnew(1);
-//     store = ft_strjoin(store, permis(&my_stat));
-//     store = ft_strjoin(store, (my_stat.st_mode & S_IRUSR) ? "r" : "-");
-//     store = ft_strjoin(store, (my_stat.st_mode & S_IWUSR) ? "w" : "-");
-//     store = ft_strjoin(store, (my_stat.st_mode & S_IXUSR) ? "x" : "-");
-//     store = ft_strjoin(store, (my_stat.st_mode & S_IRGRP) ? "r" : "-");
-//     store = ft_strjoin(store, (my_stat.st_mode & S_IWGRP) ? "w" : "-");
-//     store = ft_strjoin(store, (my_stat.st_mode & S_IXGRP) ? "x" : "-");
-//     store = ft_strjoin(store, (my_stat.st_mode & S_IROTH) ? "r" : "-");
-//     store = ft_strjoin(store, (my_stat.st_mode & S_IWOTH) ? "w" : "-");
-//     store = ft_strjoin(store, (my_stat.st_mode & S_IXOTH) ? "x" : "-");
-//     link->next = (*headd);
-//     link->permis = store;
-//     (*headd) = link;
-// }
 void filtreaza_bazaru_la_path(char *str)
 {
 	int i = 0;
@@ -188,10 +164,8 @@ void listdir(char *path)
 		//printf("zoebisi dva raza nah\n");
 		while ((d = readdir(dir)))
 		{		
-			printf("zoebisi tretii raz nahoi\n");
 		  ft_strcpy (buf, path);
 		  ft_strcat (buf, "/"); 
-		  printf("%s\n",d->d_name );
 			if (i < 2)
 			{
 			if (flaguri.a)
@@ -209,35 +183,33 @@ void listdir(char *path)
 			i++;
 		}
 		closedir(dir);
+		filtreaza_bazaru_la_lista(&files);
 		MergeSort(&files);
-		//printList(files);
-			if (flaguri.r_upper == 1)
-			{
-				//print_ll(files);
-				printList(files);
-				recurs(files);
-
-			}
+		if (flaguri.r_upper == 1)
+		{
+			printList(files);
+			recurs(files);
+		}
 		files = NULL;
 	}
 }
 void recurs(s_list *temp)
 {
-	static int first = 0;
+	//static int first = 0;
 	s_list *cur;
 	cur = temp;
 
 	while (cur)
 	{
-		if (first == 1)		
-			printf("tot ce eGGzista%s\n",cur->path );
+		//if (first == 1)		
+			//printf("tot ce eGGzista%s\n",cur->path );
 		if (cur->name && cur->path && S_ISDIR(cur->st_mode) && ft_strcmp(cur->name, ".") && ft_strcmp(cur->name, ".."))
 		{
 			listdir(cur->path);
 		}
 		cur = cur->next;
 	}
-	first++;
+	//first++;
 	free(cur);
 }
 

@@ -29,6 +29,7 @@ void	print_ll(s_list *headd)
 	{
 		printf("%s",temp->permis);
 		printf(" %d",(int)temp->nlink);
+		temp->timp = (char*)malloc(sizeof(char) * 128);
 		temp->timp = ctime(&temp->date) + 4;
 		temp->timp[12] = 0;
 		printf(" %s %s %5d %s %s\n",temp->pw->pw_name,temp->gr->gr_name,(int)temp->size, temp->timp, temp->name);
@@ -158,8 +159,8 @@ void reverse(s_list **head_ref)
 void MergeSort(s_list **headRef)
 {
 	s_list *headd = *headRef;
-	s_list *a;
-	s_list *b;
+	s_list *a = (s_list*)malloc(sizeof(char) * 1000);
+	s_list *b = (s_list*)malloc(sizeof(char) * 1000);
 	if ((headd == NULL) || (headd->next == NULL))
 	{
 		return;
@@ -182,7 +183,12 @@ s_list *SortedMerge(s_list *a, s_list *b)
 	if (flaguri.t == 1)
 		c = difftime(b->date, a->date);
 	else
-		c = ft_strcmp(a->name,b->name);
+	{
+		if (a->name != NULL && b->name != NULL)
+			c = ft_strcmp(a->name,b->name);
+		else
+			c = ft_strcmp(a->next->name, b->next->name);
+	}
 	if (c <= 0)
 	{
 		result = a;
@@ -227,163 +233,3 @@ void FrontBackSplit(s_list *source,
 		slow->next = NULL;
 	}
 }
-
-// int		get_max_major_len(s_list *begin)
-// {
-// 	int		max;
-// 	s_file	*file;
-// 	t_list	*l;
-
-// 	if (begin == NULL)
-// 		return (0);
-// 	max = 0;
-// 	l = begin;
-// 	while (l)
-// 	{
-// 		file = (s_file*)l->content;
-// 		if (file != NULL && ft_nbrlen_signed(file->major, 10) > max)
-// 			max = ft_nbrlen_signed(file->major, 10);
-// 		l = l->next;
-// 	}
-// 	return (max);
-// }
-// static int	get_max_hard_links_len(t_list *begin)
-// {
-// 	int		max;
-// 	t_file	*file;
-// 	t_list	*l;
-
-// 	if (begin == NULL)
-// 		return (0);
-// 	max = 0;
-// 	l = begin;
-// 	while (l)
-// 	{
-// 		file = (t_file*)l->content;
-// 		if (file != NULL && ft_nbrlen_signed(file->hard_links, 10) > max)
-// 			max = ft_nbrlen_signed(file->hard_links, 10);
-// 		l = l->next;
-// 	}
-// 	return (max);
-// }
-
-// static int	get_max_size_len(t_list *begin)
-// {
-// 	int		max;
-// 	t_file	*file;
-// 	t_list	*l;
-
-// 	if (begin == NULL)
-// 		return (0);
-// 	max = 0;
-// 	l = begin;
-// 	while (l)
-// 	{
-// 		file = (t_file*)l->content;
-// 		if (file != NULL && ft_nbrlen_signed((long long)file->size, 10) > max)
-// 			max = ft_nbrlen_signed((long long)file->size, 10);
-// 		l = l->next;
-// 	}
-// 	return (max);
-// }
-
-// static int	get_max_owner_len(t_list *begin)
-// {
-// 	int		max;
-// 	t_file	*file;
-// 	t_list	*l;
-
-// 	if (begin == NULL)
-// 		return (0);
-// 	max = 0;
-// 	l = begin;
-// 	while (l)
-// 	{
-// 		file = (t_file*)l->content;
-// 		if (file != NULL && ft_strlen(file->owner) > max)
-// 			max = (int)ft_strlen(file->owner);
-// 		l = l->next;
-// 	}
-// 	return (max);
-// }
-
-// static int	get_max_group_len(t_list *begin)
-// {
-// 	int		max;
-// 	t_file	*file;
-// 	t_list	*l;
-
-// 	if (begin == NULL)
-// 		return (0);
-// 	max = 0;
-// 	l = begin;
-// 	while (l)
-// 	{
-// 		file = (t_file*)l->content;
-// 		if (file != NULL && ft_strlen(file->group) > max)
-// 			max = (int)ft_strlen(file->group);
-// 		l = l->next;
-// 	}
-// 	return (max);
-// }
-
-// void		set_max(t_list *files, t_max *max)
-// {
-// 	max->max_hard_links_len = get_max_hard_links_len(files);
-// 	max->max_size_len = get_max_size_len(files);
-// 	max->max_owner_len = get_max_owner_len(files);
-// 	max->max_group_len = get_max_group_len(files);
-// 	max->max_major = get_max_major_len(files);
-// 	max->max_minor = get_max_minor_len(files);
-// }
-// int		get_max_minor_len(s_list *begin)
-// {
-// 	int		max;
-// 	t_file	*file;
-// 	t_list	*l;
-
-// 	if (begin == NULL)
-// 		return (0);
-// 	max = 0;
-// 	l = begin;
-// 	while (l)
-// 	{
-// 		file = (t_file*)l->content;
-// 		if (file != NULL && ft_nbrlen_signed(file->minor, 10) > max)
-// 			max = ft_nbrlen_signed(file->minor, 10);
-// 		l = l->next;
-// 	}
-// 	return (max);
-// }
-
-// void recurs(char *str)
-// {
-// 	DIR 	*dir;
-// 	s_list *temp = (s_list*)malloc(sizeof(s_list) * 10 + 1);
-// 	temp = head;
-// 	char *buf = (char *)malloc(sizeof(char) * sizeof(buf) *  2048);
-// 	int rwb = 0;
-// 	while (d = readdir(dir))
-// 	{	
-// 		ft_strcpy (buf, str);
-// 		ft_strcat (buf, "/");
-// 		ft_strcat (buf, d->d_name);
-
-// 	}
-// 	struct dirent *d;
-// 	while (temp != NULL)
-// 	{
-// 		if (temp->permis[0] == 'd')
-// 		{
-// 			//intra in fisier
-// 			temp->parent = ft_strjoin(temp->parent,"/");
-//             temp->name = ft_strjoin(temp->parent,temp->name);
-//             if ((dir = opendir(temp->name)) != NULL)
-//                 printf(" %s :\n",temp->name);
-//             error(temp->name);
-//             printf("\n\n");
-// 		}
-// 		temp = temp->next;
-// 	}
-// }
-
