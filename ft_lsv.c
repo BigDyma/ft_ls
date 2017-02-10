@@ -27,12 +27,12 @@ void	print_ll(s_list *headd)
 	temp = headd;
 	while (temp != NULL)
 	{
-		printf("%s",temp->permis);
-		printf(" %d",(int)temp->nlink);
-		temp->timp = (char*)malloc(sizeof(char) * 128);
+		printf("%s", temp->permis);
+		printf(" %d", (int)temp->nlink);
+		temp->timp = (char*)malloc(sizeof(char) * 1024);
 		temp->timp = ctime(&temp->date) + 4;
 		temp->timp[12] = 0;
-		printf(" %s %s %5d %s %s\n",temp->pw->pw_name,temp->gr->gr_name,(int)temp->size, temp->timp, temp->name);
+		printf(" %s %s %5d %s %s\n", temp->pw->pw_name, temp->gr->gr_name, (int)temp->size, temp->timp, temp->name);
 		temp = temp->next;
 	}
 }
@@ -47,7 +47,7 @@ void	print_l()
 		temp->timp = ctime(&temp->date) + 4;
 		temp->timp[12] = 0;
 		printf(" %s %s %5d %s %s\n",temp->pw->pw_name,temp->gr->gr_name,(int)temp->size, temp->timp, temp->name);
-		temp = temp->next;
+			temp = temp->next;
 	}
 }
 int minmin(char *str)
@@ -159,8 +159,8 @@ void reverse(s_list **head_ref)
 void MergeSort(s_list **headRef)
 {
 	s_list *headd = *headRef;
-	s_list *a = (s_list*)malloc(sizeof(char) * 1000);
-	s_list *b = (s_list*)malloc(sizeof(char) * 1000);
+	s_list *a = (s_list*)malloc(sizeof(char) * 1024);
+	s_list *b = (s_list*)malloc(sizeof(char) * 1024);
 	if ((headd == NULL) || (headd->next == NULL))
 	{
 		return;

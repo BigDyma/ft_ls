@@ -35,6 +35,10 @@ s_list	*elemnew(char *name, char *path)
 	elem->uid = fstat.st_uid;
 	elem->gid = fstat.st_gid;
 	elem->size = fstat.st_size;
+    struct passwd *pw = getpwuid(elem->uid);
+    elem->pw = pw;
+    struct group  *gr = getgrgid(elem->gid);
+    elem->gr = gr;
 	elem->st_mode = fstat.st_mode;
 	elem->blocks = fstat.st_blocks;
 	store = ft_strnew(1);
@@ -57,7 +61,7 @@ void printList(s_list *node)
 {
   while (node != NULL)
   {
-     printf(" -%s \n ", node->name);
+     printf(" %s \n ", node->name);
      node = node->next;
   }
 }
@@ -161,7 +165,7 @@ void listdir(char *path)
 
 	if (dir != NULL)
 	{
-		//printf("zoebisi dva raza nah\n");
+
 		while ((d = readdir(dir)))
 		{		
 		  ft_strcpy (buf, path);
@@ -185,31 +189,36 @@ void listdir(char *path)
 		closedir(dir);
 		filtreaza_bazaru_la_lista(&files);
 		MergeSort(&files);
-		if (flaguri.r_upper == 1)
+		if (flaguri.r_upper == 1 && g_flagprove == 1)
 		{
 			printList(files);
-			recurs(files);
 		}
-		files = NULL;
+		else
+		{
+			if(flaguri.r == 1)
+				reverse(&files);
+			if (flaguri.l)
+				print_ll(files);
+			else
+				printList(files);
+		}
+		recurs(files);
 	}
+	files = NULL;
 }
 void recurs(s_list *temp)
 {
-	//static int first = 0;
 	s_list *cur;
 	cur = temp;
 
 	while (cur)
 	{
-		//if (first == 1)		
-			//printf("tot ce eGGzista%s\n",cur->path );
 		if (cur->name && cur->path && S_ISDIR(cur->st_mode) && ft_strcmp(cur->name, ".") && ft_strcmp(cur->name, ".."))
 		{
 			listdir(cur->path);
 		}
 		cur = cur->next;
 	}
-	//first++;
 	free(cur);
 }
 
@@ -255,7 +264,6 @@ int ls(char *str)
 		}
 	if (flaguri.r_upper == 1)
 	{
-		printf("inainte de recursie -- DONE!\n");
 		temp = head;
 		recurs(temp);
 	}
@@ -366,7 +374,6 @@ void	parse(char **ac, int len)
 		}
 		else if (!flag(ac[i]) || filefound == 1)
 		{
-			//printf("o intrat in functie flag(), %s\n",ac[i]);
 			error(ac[i]);
 			filefound = 1;
 		}
@@ -384,6 +391,5 @@ int main(int av, char **ac)
 {
 	flaguri = *(flag_list*)malloc(sizeof(flag_list) * 4096 + 2);
 	parse(ac, av);
-	//printf("flagul R:%d\n",flaguri.r_upper);
 	return (0);
 }

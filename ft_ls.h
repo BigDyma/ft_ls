@@ -36,26 +36,6 @@
 # define RESET      "\x1b[0m"
 # define WHITE      "\033[0m"
 
-/*
-typedef struct      s_list
-{
-    void            *content;
-    size_t          content_size;
-    struct s_list   *next;
-}   
-*/
-// STRUCTURI
-
-typedef struct  s_max
-{
-    int         max_size_len;
-    int         max_hard_links_len;
-    int         max_owner_len;
-    int         max_group_len;
-    int         max_major;
-    int         max_minor;
-}               t_max;
-
 typedef struct           flag_lis
 {
      int l;
