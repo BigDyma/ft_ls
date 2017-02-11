@@ -11,4 +11,7 @@ clean:
 	make -C libft/ clean
 fclean: clean
 	rm -rf $(NAME)
+new:
+	gcc -Wall -Wextra -Werror -c $(SRC)
+	gcc -o $(NAME) $(OBJ) -L libft/ -lft
 re: fclean all

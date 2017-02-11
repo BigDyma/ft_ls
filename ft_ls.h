@@ -50,8 +50,17 @@ typedef struct           flag_lis
      int m;
      int g_upper;
      int p;
-}                        flag_list;
-
+}                      flag_list;
+typedef struct lungimi
+{
+    //int permis;
+    int nlink;
+    int pw_name;
+    int gr_name;
+    int size;
+    int timp;
+    // int name;
+} lungimi;
 typedef struct      d_lst
 {
     char    *name;
@@ -94,6 +103,7 @@ int in(char *str, char str2);
 int minmin(char *str);
 void MergeSort(s_list **headRef);
 void    display_file(char *str);
+lungimi antiponturi();
 
 //GLOBALE
 
@@ -103,3 +113,13 @@ int  g_p;
 int g_flagprove;
 
 #endif
+
+
+
+
+
+
+
+
+//  printf("%-*s%-*s%-*d%-*s%s\n", lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
+

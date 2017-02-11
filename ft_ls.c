@@ -23,7 +23,7 @@ s_list	*elemnew(char *name, char *path)
 	s_list			*elem;
 	struct stat		fstat;
 	char *store;
-	elem = malloc(sizeof(s_list) * sizeof(elem) * 10000 + 1);
+	elem = malloc(sizeof(s_list) * sizeof(elem) * 5120 + 1);
 	elem->name = ft_strdup(name);
 	 // printf("%s\n",elem->name );
 	elem->path = ft_strjoin(path, name);
@@ -41,6 +41,8 @@ s_list	*elemnew(char *name, char *path)
     elem->gr = gr;
 	elem->st_mode = fstat.st_mode;
 	elem->blocks = fstat.st_blocks;
+	elem->minor = minor(fstat.st_rdev);
+	elem->major = major(fstat.st_rdev);
 	store = ft_strnew(1);
     store = ft_strjoin(store, permis(&fstat));
     store = ft_strjoin(store, (fstat.st_mode & S_IRUSR) ? "r" : "-");
@@ -124,6 +126,8 @@ int  put_the_fuck_in_push(s_list **headd, struct dirent *d, char *path)
    	link->st_mode = my_stat.st_mode;
     link->gr = gr;
     link->blocks = my_stat.st_blocks;
+ 	link->minor = minor(my_stat.st_rdev);
+	link->major = major(my_stat.st_rdev);
     store = ft_strnew(1);
     store = ft_strjoin(store, permis(&my_stat));
     store = ft_strjoin(store, (my_stat.st_mode & S_IRUSR) ? "r" : "-");
@@ -139,6 +143,7 @@ int  put_the_fuck_in_push(s_list **headd, struct dirent *d, char *path)
     //END put data
     link->next = (*headd);
     (*headd) = link;
+    // free(link);
     return (1);
 }
 void filtreaza_bazaru_la_path(char *str)
@@ -205,6 +210,7 @@ void listdir(char *path)
 		recurs(files);
 	}
 	files = NULL;
+	// free(files);
 }
 void recurs(s_list *temp)
 {
@@ -226,7 +232,7 @@ int ls(char *str)
 {
 	struct dirent *d;
 	DIR *dir;
-	s_list *temp = (s_list*)malloc(sizeof(s_list) * 1024);
+	s_list *temp = (s_list*)malloc(sizeof(s_list) * 5120);
 	char *buf = (char *)malloc(sizeof(char) * 1024);
 	g_p = 0;
 	if ((dir = opendir(str)) == NULL)
@@ -262,12 +268,13 @@ int ls(char *str)
 		{
 			print_name();
 		}
-	if (flaguri.r_upper == 1)
-	{
-		temp = head;
-		recurs(temp);
+		if (flaguri.r_upper == 1)
+		{
+			temp = head;
+			recurs(temp);
+		}
 	}
-	}
+	free(temp);
 	closedir(dir);
 	return (1);
 }
@@ -300,7 +307,7 @@ void insert(struct dirent *d, char *path, char *str)
     link->parent = str;
     link->next = head;
     lstat(path,&my_stat);
-    g_p+=(int)my_stat.st_blocks;
+    g_p += (int)my_stat.st_blocks;
     link->size = my_stat.st_size;
     link->date = my_stat.st_ctime;
     link->st_mode = my_stat.st_mode;
@@ -309,6 +316,9 @@ void insert(struct dirent *d, char *path, char *str)
     struct passwd *pw = getpwuid(link->uid);
     link->gid = my_stat.st_gid;
     struct group  *gr = getgrgid(link->gid);
+    link->st_rdev = my_stat.st_rdev;
+    link->minor = minor(my_stat.st_rdev);
+	link->major = major(my_stat.st_rdev);
     link->pw = pw;
     link->gr = gr;
     link->blocks = my_stat.st_blocks;
@@ -354,6 +364,7 @@ void    display_file(char *str)
      printf("%s %d %s %s %d %s %s\n",store,(int)my_stat.st_nlink,pw->pw_name,gr->gr_name,(int)my_stat.st_size,
         link->timp,str);
     else printf("%s\n",str);
+    free(link);
 }
 void	parse(char **ac, int len)
 {
@@ -391,5 +402,6 @@ int main(int av, char **ac)
 {
 	flaguri = *(flag_list*)malloc(sizeof(flag_list) * 4096 + 2);
 	parse(ac, av);
+
 	return (0);
 }

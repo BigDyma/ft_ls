@@ -24,30 +24,72 @@ void print_name()
 void	print_ll(s_list *headd)
 {
 	s_list *temp;
+	s_list *cur;
 	temp = headd;
+	cur = temp;
+	lungimi lungime;
 	while (temp != NULL)
 	{
-		printf("%s", temp->permis);
-		printf(" %d", (int)temp->nlink);
-		temp->timp = (char*)malloc(sizeof(char) * 1024);
 		temp->timp = ctime(&temp->date) + 4;
 		temp->timp[12] = 0;
-		printf(" %s %s %5d %s %s\n", temp->pw->pw_name, temp->gr->gr_name, (int)temp->size, temp->timp, temp->name);
 		temp = temp->next;
 	}
+	lungime = antiponturi();
+	temp = cur;
+	while (temp)
+	{
+		printf("%s  %-*d  %-*s %-*s %-*d %-*s %s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
+		temp = temp->next;
+	}
+}
+lungimi	antiponturi()
+{
+	s_list *temp;
+	temp = head;
+	lungimi length;
+	length.nlink = 0;
+	length.pw_name = 0;
+	length.gr_name = 0;
+	length.size = 0;
+	length.timp = 0;
+	while (temp)
+	{
+		if ((int)ft_strlen(ft_itoa(temp->nlink)) > length.nlink)
+			length.nlink = (int)ft_strlen(ft_itoa(temp->nlink));
+		if ((int)ft_strlen(temp->pw->pw_name) > length.pw_name)
+			length.pw_name = (int)ft_strlen(temp->pw->pw_name);
+		if ((int)ft_strlen(temp->gr->gr_name) > length.gr_name)
+			length.gr_name = (int)ft_strlen(temp->gr->gr_name);
+		if ((int)ft_strlen(ft_itoa((int)temp->size)) > length.size)
+			length.size = (int)ft_strlen(ft_itoa((int)temp->size));
+		if ((int)ft_strlen(temp->timp) > length.timp)
+			length.timp = (int)ft_strlen(temp->timp);
+		temp = temp->next;
+	}
+	printf("%d\n", length.pw_name);
+	return (length);
 }
 void	print_l()
 {
 	s_list *temp;
+	s_list *cur;
 	temp = head;
+	cur = temp;
+	lungimi lungime;
 	while (temp != NULL)
 	{
-		printf("%s",temp->permis);
-		printf(" %d",(int)temp->nlink);
+
 		temp->timp = ctime(&temp->date) + 4;
 		temp->timp[12] = 0;
-		printf(" %s %s %5d %s %s\n",temp->pw->pw_name,temp->gr->gr_name,(int)temp->size, temp->timp, temp->name);
-			temp = temp->next;
+		printf("%s\n", temp->timp);
+		temp = temp->next;
+	}
+	lungime = antiponturi();
+	temp = cur;
+	while (temp)
+	{
+		// printf("%s  %-*d  %-*s %-*s  %*d %-*s %s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
+		temp = temp->next;
 	}
 }
 int minmin(char *str)
@@ -75,7 +117,6 @@ int		flag(char *str)
 {
 	int i = 0;
 	size_t min = 0;
-	//printf("functia flag, string:%s\n", str);
 	while (str[i])
 	{
 		if (str[i] == '-')
@@ -119,20 +160,18 @@ void    error(char *str)
 {
     DIR *dir;
     struct  stat my_stat;
-   // printf("o intrat in error()\n");
     lstat(str,&my_stat);
     if ((dir = opendir(str)) == NULL)
     {   
         if (errno == 20)
          {   
-            //printf("%s\n",str);
             display_file(str);
             return ;
          }
         char *stru;
         stru = ft_strnew(1);
         stru = ft_strjoin(stru,"ft_ls: cannot open directory ");
-       stru = ft_strjoin(stru,str);
+       	stru = ft_strjoin(stru,str);
         perror(stru);
     }
     if (S_ISLNK(my_stat.st_mode))
