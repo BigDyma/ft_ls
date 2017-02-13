@@ -28,12 +28,6 @@ void	print_ll(s_list *headd)
 	temp = headd;
 	cur = temp;
 	lungimi lungime;
-	while (temp != NULL)
-	{
-		temp->timp = ctime(&temp->date) + 4;
-		temp->timp[12] = 0;
-		temp = temp->next;
-	}
 	lungime = antiponturi();
 	temp = cur;
 	while (temp)
@@ -42,10 +36,10 @@ void	print_ll(s_list *headd)
 		temp = temp->next;
 	}
 }
-lungimi	antiponturi()
+lungimi	antiponturi(s_list *headd)
 {
 	s_list *temp;
-	temp = head;
+	temp = headd;
 	lungimi length;
 	length.nlink = 0;
 	length.pw_name = 0;
@@ -54,6 +48,8 @@ lungimi	antiponturi()
 	length.timp = 0;
 	while (temp)
 	{
+	//	printf("%s\n",temp->timp ); 
+		//printf("pizdik %s \n", temp->name);
 		if ((int)ft_strlen(ft_itoa(temp->nlink)) > length.nlink)
 			length.nlink = (int)ft_strlen(ft_itoa(temp->nlink));
 		if ((int)ft_strlen(temp->pw->pw_name) > length.pw_name)
@@ -66,29 +62,31 @@ lungimi	antiponturi()
 			length.timp = (int)ft_strlen(temp->timp);
 		temp = temp->next;
 	}
-	printf("%d\n", length.pw_name);
 	return (length);
 }
+void baga_timpul_in_lista(s_list **cur)
+{
+	s_list *temp = *cur;
+	while (temp != NULL)
+	{
+		temp->timp = ctime(&temp->date) + 4;
+		temp->timp[12] = 0;
+		temp = temp->next;
+	}
+	*cur = temp;
+}
+
 void	print_l()
 {
 	s_list *temp;
-	s_list *cur;
-	temp = head;
-	cur = temp;
+	// s_list *current;
 	lungimi lungime;
-	while (temp != NULL)
-	{
-
-		temp->timp = ctime(&temp->date) + 4;
-		temp->timp[12] = 0;
-		printf("%s\n", temp->timp);
-		temp = temp->next;
-	}
-	lungime = antiponturi();
-	temp = cur;
+	temp = head;
+	//baga_timpul_in_lista(&temp);
+	lungime = antiponturi(temp);
 	while (temp)
 	{
-		// printf("%s  %-*d  %-*s %-*s  %*d %-*s %s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
+		 printf("%s  %-*d  %-*s %-*s  %*d %-*s %s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
 		temp = temp->next;
 	}
 }

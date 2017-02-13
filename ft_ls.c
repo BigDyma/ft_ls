@@ -35,6 +35,10 @@ s_list	*elemnew(char *name, char *path)
 	elem->uid = fstat.st_uid;
 	elem->gid = fstat.st_gid;
 	elem->size = fstat.st_size;
+	elem->date = fstat.st_ctime;
+    elem->timp = ft_strdup(ctime(&elem->date) + 4);
+	elem->timp[12] = 0;
+	printf(" huiak huiak %s\n",elem->timp);
     struct passwd *pw = getpwuid(elem->uid);
     elem->pw = pw;
     struct group  *gr = getgrgid(elem->gid);
@@ -117,6 +121,8 @@ int  put_the_fuck_in_push(s_list **headd, struct dirent *d, char *path)
     lstat(link->path,&my_stat);
     link->size = my_stat.st_size;
     link->date = my_stat.st_ctime;
+    link->timp = ft_strdup(ctime(&my_stat.st_ctime) + 4);
+	link->timp[12] = 0;
     link->nlink = my_stat.st_nlink;
     link->uid = my_stat.st_uid;
     struct passwd *pw = getpwuid(link->uid);
@@ -310,6 +316,8 @@ void insert(struct dirent *d, char *path, char *str)
     g_p += (int)my_stat.st_blocks;
     link->size = my_stat.st_size;
     link->date = my_stat.st_ctime;
+    link->timp = ft_strdup(ctime(&my_stat.st_ctime) + 4);
+	link->timp[12] = 0;
     link->st_mode = my_stat.st_mode;
     link->nlink = my_stat.st_nlink;
     link->uid = my_stat.st_uid;
