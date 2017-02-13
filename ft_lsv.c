@@ -6,6 +6,8 @@ void 	print_name_by_list(s_list *temp)
 	current = temp;
 	while (current != NULL)
 	{
+		if (current->permis[0] == 'd')
+			printf(YELLOW"%s\n"RESET,current->name);
 		printf("%s\n",current->name);
 		current=current->next;
 	}
@@ -24,15 +26,15 @@ void print_name()
 void	print_ll(s_list *headd)
 {
 	s_list *temp;
-	s_list *cur;
-	temp = headd;
-	cur = temp;
 	lungimi lungime;
-	lungime = antiponturi();
-	temp = cur;
+	temp = headd;
+	lungime = antiponturi(temp);
 	while (temp)
 	{
-		printf("%s  %-*d  %-*s %-*s %-*d %-*s %s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
+		if (g_minmaj == 1)
+			printf("%s %-*d %-*s %-*s %*d, %*d %-*s %-s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.major, temp->major, lungime.minor, temp->minor, lungime.timp, temp->timp, temp->name);
+		else
+			printf("%s %-*d %-*s %-*s %*d %-*s %s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
 		temp = temp->next;
 	}
 }
@@ -46,10 +48,14 @@ lungimi	antiponturi(s_list *headd)
 	length.gr_name = 0;
 	length.size = 0;
 	length.timp = 0;
+	length.major = 0;
+	length.minor = 0;
 	while (temp)
 	{
-	//	printf("%s\n",temp->timp ); 
-		//printf("pizdik %s \n", temp->name);
+		if ((int)ft_strlen(ft_itoa(temp->minor)) > length.minor)
+			length.minor = (int)ft_strlen(ft_itoa(temp->minor));
+		if ((int)ft_strlen(ft_itoa(temp->major)) > length.major)
+			length.major = (int)ft_strlen(ft_itoa(temp->major));
 		if ((int)ft_strlen(ft_itoa(temp->nlink)) > length.nlink)
 			length.nlink = (int)ft_strlen(ft_itoa(temp->nlink));
 		if ((int)ft_strlen(temp->pw->pw_name) > length.pw_name)
@@ -79,14 +85,15 @@ void baga_timpul_in_lista(s_list **cur)
 void	print_l()
 {
 	s_list *temp;
-	// s_list *current;
 	lungimi lungime;
 	temp = head;
-	//baga_timpul_in_lista(&temp);
 	lungime = antiponturi(temp);
 	while (temp)
 	{
-		 printf("%s  %-*d  %-*s %-*s  %*d %-*s %s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
+		if (g_minmaj == 1)
+			printf("%s  %-*d %-*s  %-*s   %*d, %*d %-*s %-s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.major, temp->major, lungime.minor, temp->minor, lungime.timp, temp->timp, temp->name);
+		else
+			printf("%s  %-*d %-*s  %-*s   %*d %-*s %s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
 		temp = temp->next;
 	}
 }

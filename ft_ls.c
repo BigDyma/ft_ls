@@ -38,7 +38,7 @@ s_list	*elemnew(char *name, char *path)
 	elem->date = fstat.st_ctime;
     elem->timp = ft_strdup(ctime(&elem->date) + 4);
 	elem->timp[12] = 0;
-	printf(" huiak huiak %s\n",elem->timp);
+	//printf(" huiak huiak %s\n",elem->timp);
     struct passwd *pw = getpwuid(elem->uid);
     elem->pw = pw;
     struct group  *gr = getgrgid(elem->gid);
@@ -81,6 +81,24 @@ void filtreaza_bazaru_la_lista(s_list **temp)
 			return;
 		}
 		while (cur != NULL && cur->name != NULL)
+		{
+			prev = cur;
+			cur = cur->next;
+		}
+		if (cur == NULL) return;
+		prev->next = cur->next;
+		free(cur);
+}
+void filtreaza_bazaru_la_lista1(s_list **temp)
+{
+	s_list *cur = *temp, *prev;
+		if (cur->name == 0 && cur != NULL)
+		{
+			*temp = cur->next;
+			free(cur);
+			return;
+		}
+		while (cur != NULL && cur->name != 0)
 		{
 			prev = cur;
 			cur = cur->next;
@@ -216,7 +234,7 @@ void listdir(char *path)
 		recurs(files);
 	}
 	files = NULL;
-	// free(files);
+	 free(files);
 }
 void recurs(s_list *temp)
 {
@@ -254,10 +272,11 @@ int ls(char *str)
 		else if (d->d_name[0] != '.')
 			insert(d, buf, str);
 	}
+	filtreaza_bazaru_la_lista1(&head);
 	MergeSort(&head);
 	if (g_flagprove == 0)
 	{
-		print_name();
+		print_name_by_list(head);
 	}
 	else
 	{
@@ -308,7 +327,7 @@ void insert(struct dirent *d, char *path, char *str)
 	s_list *link = (s_list*)malloc(sizeof(s_list) * 4096 + 1);
     struct  stat my_stat;
     char    *store;
-    link->name = d->d_name;
+    link->name = ft_strdup(d->d_name);
     link->path = ft_strjoin(path, str);
     link->parent = str;
     link->next = head;
@@ -327,6 +346,8 @@ void insert(struct dirent *d, char *path, char *str)
     link->st_rdev = my_stat.st_rdev;
     link->minor = minor(my_stat.st_rdev);
 	link->major = major(my_stat.st_rdev);
+	if (link->minor || link->major)
+		g_minmaj = 1;
     link->pw = pw;
     link->gr = gr;
     link->blocks = my_stat.st_blocks;
@@ -405,7 +426,6 @@ void	parse(char **ac, int len)
 		ls(".");
 	}
 }
-
 int main(int av, char **ac)
 {
 	flaguri = *(flag_list*)malloc(sizeof(flag_list) * 4096 + 2);

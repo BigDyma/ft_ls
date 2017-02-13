@@ -59,6 +59,8 @@ typedef struct lungimi
     int gr_name;
     int size;
     int timp;
+    int minor;
+    int major;
     // int name;
 } lungimi;
 typedef struct      d_lst
@@ -111,6 +113,7 @@ flag_list   flaguri;
 s_list      *head;
 int  g_p;
 int g_flagprove;
+int g_minmaj;
 
 #endif
 
