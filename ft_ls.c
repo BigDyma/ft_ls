@@ -13,9 +13,6 @@
 
 #include "ft_ls.h"
 
-# define DOHUIA 60000
-
-char filepath[DOHUIA + 1], filename[DOHUIA + 1];
 char    *permis(struct stat *elem);
 void  recurs(s_list *temp);
 s_list	*elemnew(char *name, char *path)
@@ -81,24 +78,6 @@ void filtreaza_bazaru_la_lista(s_list **temp)
 			return;
 		}
 		while (cur != NULL && cur->name != NULL)
-		{
-			prev = cur;
-			cur = cur->next;
-		}
-		if (cur == NULL) return;
-		prev->next = cur->next;
-		free(cur);
-}
-void filtreaza_bazaru_la_lista1(s_list **temp)
-{
-	s_list *cur = *temp, *prev;
-		if (cur->name == 0 && cur != NULL)
-		{
-			*temp = cur->next;
-			free(cur);
-			return;
-		}
-		while (cur != NULL && cur->name != 0)
 		{
 			prev = cur;
 			cur = cur->next;
@@ -259,8 +238,8 @@ int ls(char *str)
 	s_list *temp = (s_list*)malloc(sizeof(s_list) * 5120);
 	char *buf = (char *)malloc(sizeof(char) * 1024);
 	g_p = 0;
-	if ((dir = opendir(str)) == NULL)
-		return (0);
+	if ((dir = opendir(str)) != NULL)
+	{
 	while ((d = readdir(dir)))
 	{
 		ft_strcpy (buf, str);
@@ -271,7 +250,7 @@ int ls(char *str)
 		else if (d->d_name[0] != '.')
 			insert(d, buf, str);
 	}
-	filtreaza_bazaru_la_lista1(&head);
+	closedir(dir);
 	MergeSort(&head);
 	if (g_flagprove == 0)
 	{
@@ -298,8 +277,8 @@ int ls(char *str)
 			recurs(temp);
 		}
 	}
+}
 	free(temp);
-	closedir(dir);
 	return (1);
 }
 
@@ -407,21 +386,26 @@ void	parse(char **ac, int len)
 	int i = 1;
 	int filefound = 0;
 	int firstmin = 0;
-	
+	if (len == 2 && minmin(ac[1]))
+	{
+		ls(".");
+		exit(1);
+	}
 	while (i < len)
 	{
 		//Daca ac[i] nu ii flag atunci el il cauta 
 		// ca fisier
-
 	if (minmin(ac[i]) && firstmin == 0 && filefound == 0)
 		{
 			firstmin = 1;
 			filefound = 1;
+			printf("o intrat in if %s\n",ac[i]);
 			i++; 
 			continue;
 		}
 		else if (!flag(ac[i]) || filefound == 1)
 		{
+			printf("atlu\n");
 			error(ac[i]);
 			filefound = 1;
 		}
@@ -429,14 +413,14 @@ void	parse(char **ac, int len)
 			searchflag(ac[i]);
 		i++;
 	}
-	if (filefound == 0)
+	if (filefound == 0 )
 	{
 		ls(".");
 	}
 }
 int main(int av, char **ac)
 {
-	flaguri = *(flag_list*)malloc(sizeof(flag_list) * 4096 + 2);
+	flaguri = *(flag_list*)malloc(sizeof(flag_list) * 40960 + 1000000);
 	parse(ac, av);
 
 	return (0);
