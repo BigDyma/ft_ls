@@ -50,7 +50,7 @@ typedef struct           flag_lis
      int m;
      int g_upper;
      int p;
-}                      flag_list;
+}                       flag_list;
 typedef struct lungimi
 {
     //int permis;
@@ -80,6 +80,7 @@ typedef struct      d_lst
     struct  passwd  *pw;
     struct  group   *gr;
     char    *permis;
+    char *linkof;
     struct  d_lst  *next;
     int32_t         major;
     int32_t         minor;
@@ -106,7 +107,7 @@ int minmin(char *str);
 void MergeSort(s_list **headRef);
 void    display_file(char *str);
 lungimi antiponturi();
-
+    
 //GLOBALE
 
 flag_list   flaguri;
@@ -114,6 +115,7 @@ s_list      *head;
 int  g_p;
 int g_flagprove;
 int g_minmaj;
+
 
 #endif
 

@@ -6,8 +6,6 @@ void 	print_name_by_list(s_list *temp)
 	current = temp;
 	while (current != NULL)
 	{
-		if (current->permis[0] == 'd')
-			printf(YELLOW"%s\n"RESET,current->name);
 		printf("%s\n",current->name);
 		current=current->next;
 	}
@@ -32,9 +30,9 @@ void	print_ll(s_list *headd)
 	while (temp)
 	{
 		if (g_minmaj == 1)
-			printf("%s %-*d %-*s %-*s %*d, %*d %-*s %-s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.major, temp->major, lungime.minor, temp->minor, lungime.timp, temp->timp, temp->name);
+			printf("%s %-*d %-*s %-*s %*d, %*d %-*s %-s\n", temp->permis, lungime.nlink, (int)temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.major, temp->major, lungime.minor, temp->minor, lungime.timp, temp->timp, temp->name);
 		else
-			printf("%s %-*d %-*s %-*s %*d %-*s %s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
+			printf("%s %-*d %-*s %-*s %*d %-*s %s\n", temp->permis, lungime.nlink, (int)temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
 		temp = temp->next;
 	}
 }
@@ -88,12 +86,17 @@ void	print_l()
 	lungimi lungime;
 	temp = head;
 	lungime = antiponturi(temp);
+
 	while (temp)
 	{
 		if (g_minmaj == 1)
-			printf("%s  %-*d %-*s  %-*s   %*d, %*d %-*s %-s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.major, temp->major, lungime.minor, temp->minor, lungime.timp, temp->timp, temp->name);
+			printf("%s  %-*d %-*s  %-*s  %*d, %*d %-*s %-s", temp->permis, lungime.nlink, (int)temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.major, temp->major, lungime.minor, temp->minor, lungime.timp, temp->timp, temp->name);
 		else
-			printf("%s  %-*d %-*s  %-*s   %*d %-*s %s\n", temp->permis, lungime.nlink, temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
+			printf("%s  %-*d %-*s  %-*s  %*d %-*s %s", temp->permis, lungime.nlink, (int)temp->nlink, lungime.pw_name, temp->pw->pw_name, lungime.gr_name, temp->gr->gr_name, lungime.size, (int)temp->size, lungime.timp, temp->timp, temp->name);
+		if (temp->linkof[0] != '\0')
+			printf(" -> %s\n",temp->linkof);
+		else
+			printf("\n");
 		temp = temp->next;
 	}
 }

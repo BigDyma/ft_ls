@@ -261,7 +261,6 @@ int ls(char *str)
 	g_p = 0;
 	if ((dir = opendir(str)) == NULL)
 		return (0);
-	//buf = ft_strnew(1);
 	while ((d = readdir(dir)))
 	{
 		ft_strcpy (buf, str);
@@ -276,7 +275,7 @@ int ls(char *str)
 	MergeSort(&head);
 	if (g_flagprove == 0)
 	{
-		print_name_by_list(head);
+		print_name();
 	}
 	else
 	{
@@ -327,11 +326,19 @@ void insert(struct dirent *d, char *path, char *str)
 	s_list *link = (s_list*)malloc(sizeof(s_list) * 4096 + 1);
     struct  stat my_stat;
     char    *store;
+    char *linkname = (char*)malloc(sizeof(char) * 128);
+    ssize_t r, bufsiz;
     link->name = ft_strdup(d->d_name);
     link->path = ft_strjoin(path, str);
     link->parent = str;
     link->next = head;
     lstat(path,&my_stat);
+    bufsiz = my_stat.st_size + 1;
+    if (my_stat.st_size == 0)
+    	bufsiz = 4096;
+    r = readlink(path, linkname, bufsiz);
+    linkname[r] = '\0';
+  	link->linkof = ft_strdup(linkname);
     g_p += (int)my_stat.st_blocks;
     link->size = my_stat.st_size;
     link->date = my_stat.st_ctime;
@@ -387,7 +394,7 @@ void    display_file(char *str)
     store = ft_strjoin(store, (my_stat.st_mode & S_IROTH) ? "r" : "-");
     store = ft_strjoin(store, (my_stat.st_mode & S_IWOTH) ? "w" : "-");
     store = ft_strjoin(store, (my_stat.st_mode & S_IXOTH) ? "x" : "-");
-    link->timp = ctime(&my_stat.st_ctime) + 4;
+    link->timp = ft_strdup(ctime(&my_stat.st_ctime) + 4);
     link->timp[12] = 0;
     if (flaguri.l)
      printf("%s %d %s %s %d %s %s\n",store,(int)my_stat.st_nlink,pw->pw_name,gr->gr_name,(int)my_stat.st_size,
@@ -404,8 +411,9 @@ void	parse(char **ac, int len)
 	while (i < len)
 	{
 		//Daca ac[i] nu ii flag atunci el il cauta 
-		// ca fisier 
-		if (minmin(ac[i]) && firstmin == 0 && filefound == 0)
+		// ca fisier
+
+	if (minmin(ac[i]) && firstmin == 0 && filefound == 0)
 		{
 			firstmin = 1;
 			filefound = 1;
